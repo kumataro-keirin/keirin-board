@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>競輪予想ボード（9車・画像バンク拡大・ライン移動・サイズ変更）</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .controls {
+      margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn:hover { background: #eee; }
+
+    .btn-size-active {
+      background: #333;
+      color: #fff;
+    }
+
+    /* バンクが大きくなるので wrapper も拡大 */
+    .board-wrapper {
+      width: 1200px;
+      height: 700px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* HOME / BACK ラベル */
+    .label {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: white;
+      -webkit-text-stroke: 2px black;
+      text-stroke: 2px black;
+      user-select: none;
+      margin: 4px 0;
+    }
+
+    /* ★ バンク全体：サイズを1.5倍くらいに拡大 */
+    .track {
+      position: relative;
+      width: 1140px;   /* 760 の約1.5倍 */
+      height: 570px;   /* 380 の約1.5倍 */
+      background-image: url("bank.jpg");
+      background-size: contain;    /* 画像全体が必ず収まる（切れない） */
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #2f6b2f;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    /* ★ 選手の丸（サイズはJSから変更する） */
+    .rider {
+      position: absolute;
+      width: 52px;   /* 中サイズの基準値（JSで上書きされる） */
+      height: 52px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      box-sizing: border-box;
+      z-index: 3;
+      transition: box-shadow 0.1s;
+    }
+    .rider:active { cursor: grabbing; }
+
+    /* ライン選択（赤枠） */
+    .rider.selected {
+      box-shadow: 0 0 0 3px rgba(255,0,0,0.5);
+    }
+
+    /* 車番色（1〜9） */
+    .r1 { background:#fff;    color:#000; }
+    .r2 { background:#000;    color:#fff; }
+    .r3 { background:#ff4d4d; color:#000; }
+    .r4 { background:#4d79ff; color:#000; }
+    .r5 { background:#ffe44d; color:#000; }
+    .r6 { background:#4dff4d; color:#000; }
+    .r7 { background:#ff9933; color:#000; }
+    .r8 { background:#ff66cc; color:#000; }
+    .r9 { background:#b366ff; color:#000; }
+
+    /* ★ 初期配置：前の配置を1.5倍くらいに拡大して調整 */
+    .r1 { top: 105px;  left: 570px; }
+    .r2 { top: 150px;  left: 705px; }
+    .r3 { top: 225px;  left: 780px; }
+    .r4 { top: 308px;  left: 780px; }
+    .r5 { top: 383px;  left: 705px; }
+    .r6 { top: 428px;  left: 570px; }
+    .r7 { top: 383px;  left: 435px; }
+    .r8 { top: 308px;  left: 360px; }
+    .r9 { top: 225px;  left: 360px; }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>競輪 予想ボード（9車・画像バンク拡大・ライン移動・サイズ変更）</h1>
+
+  <div class="controls">
+    <button class="btn" id="resetBtn">初期位置に戻す</button>
+    <button class="btn" id="clearSelectionBtn">ライン選択解除</button>
+    <!-- サイズ変更ボタン -->
+    <button class="btn btn-size btn-size-active" data-size="small">丸 小</button>
+    <button class="btn btn-size" data-size="medium">丸 中</button>
+    <button class="btn btn-size" data-size="large">丸 大</button>
+  </div>
+
+  <div class="label">BACK</div>
+
+  <div class="board-wrapper">
+    <div class="track" id="track">
+
+      <div class="rider r1">1</div>
+      <div class="rider r2">2</div>
+      <div class="rider r3">3</div>
+      <div class="rider r4">4</div>
+      <div class="rider r5">5</div>
+      <div class="rider r6">6</div>
+      <div class="rider r7">7</div>
+      <div class="rider r8">8</div>
+      <div class="rider r9">9</div>
+
+    </div>
+  </div>
+
+  <div class="label">HOME</div>
+
+  <div class="hint">
+    ● Shift＋クリック → ライン選択（赤枠）<br>
+    ● 選択した丸のどれかをドラッグ → 全員まとめて移動<br>
+    ● 「初期位置に戻す」「ライン選択解除」「丸 小/中/大」ボタンも使えます
+  </div>
+
+  <script>
+    (function () {
+      const track = document.getElementById("track");
+      const riders = Array.from(document.querySelectorAll(".rider"));
+      const resetBtn = document.getElementById("resetBtn");
+      const clearSelectionBtn = document.getElementById("clearSelectionBtn");
+      const sizeButtons = Array.from(document.querySelectorAll(".btn-size"));
+
+      let isDragging = false;
+      let dragItems = [];
+      let startX = 0;
+      let startY = 0;
+
+      const BASE_SIZE = 52;          // 中サイズの基準
+      let currentScale = 1.0;        // 今の倍率
+
+      /* 初期位置保存 */
+      window.addEventListener("load", () => {
+        riders.forEach(r => {
+          const cs = getComputedStyle(r);
+          r.dataset.initLeft = cs.left;
+          r.dataset.initTop = cs.top;
+        });
+        // ページ表示時に一度サイズ適用（小サイズを初期にしたいなら small に変えてもOK）
+        applySize("small");
+      });
+
+      /* サイズ変更処理 */
+      function applySize(mode) {
+        let scale;
+        if (mode === "small") scale = 0.85;
+        else if (mode === "large") scale = 1.25;
+        else scale = 1.0; // medium
+
+        const newSize = BASE_SIZE * scale;
+        riders.forEach(r => {
+          r.style.width = newSize + "px";
+          r.style.height = newSize + "px";
+          // フォントサイズも少し連動させると見やすい
+          r.style.fontSize = (newSize * 0.5) + "px";
+        });
+        currentScale = scale;
+
+        // ボタンの見た目反映
+        sizeButtons.forEach(btn => btn.classList.remove("btn-size-active"));
+        const activeBtn = sizeButtons.find(b => b.dataset.size === mode);
+        if (activeBtn) activeBtn.classList.add("btn-size-active");
+      }
+
+      sizeButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const mode = btn.dataset.size;
+          applySize(mode);
+        });
+      });
+
+      /* Shift+クリックでライン選択ON/OFF */
+      track.addEventListener("click", (e) => {
+        const r = e.target.closest(".rider");
+        if (!r) return;
+        if (e.shiftKey) {
+          r.classList.toggle("selected");
+          e.preventDefault();
+        }
+      });
+
+      const selectedRiders = () =>
+        riders.filter(r => r.classList.contains("selected"));
+
+      /* ドラッグ開始 */
+      function startDrag(e) {
+        const target = e.target.closest(".rider");
+        if (!target) return;
+        if (!e.touches && e.shiftKey) return; // Shift中は選択操作
+
+        isDragging = true;
+
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        startX = cx;
+        startY = cy;
+
+        const sel = selectedRiders();
+        const group = (sel.length > 0 && sel.includes(target)) ? sel : [target];
+
+        dragItems = group.map(el => {
+          const cs = getComputedStyle(el);
+          return {
+            el,
+            startLeft: parseFloat(cs.left),
+            startTop: parseFloat(cs.top)
+          };
+        });
+
+        e.preventDefault();
+      }
+
+      /* ドラッグ中 */
+      function moveDrag(e) {
+        if (!isDragging || dragItems.length === 0) return;
+
+        const rect = track.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const dx = cx - startX;
+        const dy = cy - startY;
+
+        dragItems.forEach(item => {
+          const el = item.el;
+          const maxX = rect.width - el.offsetWidth;
+          const maxY = rect.height - el.offsetHeight;
+
+          let left = item.startLeft + dx;
+          let top = item.startTop + dy;
+
+          left = Math.max(0, Math.min(maxX, left));
+          top = Math.max(0, Math.min(maxY, top));
+
+          el.style.left = left + "px";
+          el.style.top = top + "px";
+        });
+
+        e.preventDefault();
+      }
+
+      /* ドラッグ終了 */
+      function endDrag() {
+        isDragging = false;
+        dragItems = [];
+      }
+
+      /* 初期位置に戻す（位置だけリセット。サイズはそのまま） */
+      function reset() {
+        riders.forEach(r => {
+          r.style.left = r.dataset.initLeft;
+          r.style.top = r.dataset.initTop;
+        });
+      }
+
+      /* ライン選択解除 */
+      function clearSel() {
+        riders.forEach(r => r.classList.remove("selected"));
+      }
+
+      // PC
+      track.addEventListener("mousedown", startDrag);
+      window.addEventListener("mousemove", moveDrag);
+      window.addEventListener("mouseup", endDrag);
+
+      // スマホ
+      track.addEventListener("touchstart", startDrag, { passive: false });
+      window.addEventListener("touchmove", moveDrag, { passive: false });
+      window.addEventListener("touchend", endDrag);
+      window.addEventListener("touchcancel", endDrag);
+
+      resetBtn.addEventListener("click", reset);
+      clearSelectionBtn.addEventListener("click", clearSel);
+    })();
+  </script>
+</body>
+</html>
