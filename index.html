@@ -334,21 +334,28 @@
     const r = e.target.closest(".rider");
     if (!r) return;
 
+    // グループモード中：タップで所属トグル
     if (currentGroupMode) {
-      if (r.dataset.group === currentGroupMode) delete r.dataset.group;
-      else r.dataset.group = currentGroupMode;
+      if (r.dataset.group === currentGroupMode) {
+        delete r.dataset.group;
+      } else {
+        r.dataset.group = currentGroupMode;
+      }
       return;
     }
 
+    // Shift＋クリックで複数選択（PC用）
     if (e.shiftKey) {
       r.classList.toggle("selected");
     }
   });
 
+  // ★ 修正済み：ここから ★
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
 
+    // PCで Shift を使った時はドラッグ開始しない
     if (!e.touches && e.shiftKey) return;
 
     isDragging = true;
@@ -378,8 +385,10 @@
       };
     });
 
-    e.preventDefault();
+    // ※ ここで preventDefault しない
+    //    → スマホの click（タップ）が殺されないのでグループ化が効く
   }
+  // ★ 修正済み：ここまで ★
 
   function moveDrag(e) {
     if (!isDragging || dragItems.length === 0) return;
@@ -411,7 +420,7 @@
       el.style.top = top + "px";
     });
 
-    e.preventDefault();
+    e.preventDefault(); // こっちはドラッグ中なので残してOK（スクロール防止）
   }
 
   function endDrag() {
@@ -433,8 +442,6 @@
   // メモ保存・削除
   saveMemoBtn.addEventListener("click", () => {
     localStorage.setItem(MEMO_KEY, memo.value);
-    // 必要ならアラート。うるさければ消してもOK。
-    // alert("メモを保存しました（この端末だけに保存されます）");
   });
 
   clearMemoBtn.addEventListener("click", () => {
