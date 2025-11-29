@@ -67,7 +67,6 @@
       color: #fff;
     }
 
-    /* PC デフォルトサイズ */
     .board-wrapper {
       width: 1200px;
       height: 700px;
@@ -92,7 +91,7 @@
       width: 1140px;
       height: 570px;
       background-image: url("bank.jpg");
-      background-size: cover;      /* ← スマホでもPCでもカバー表示 */
+      background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
       background-color: #2f6b2f;
@@ -131,7 +130,7 @@
     .rider[data-group="4"] { box-shadow: 0 0 0 3px rgba(160,80,255,0.7); }
     .rider[data-group="5"] { box-shadow: 0 0 0 3px rgba(255,0,120,0.7); }
 
-    /* 車番色＋初期位置（PC用デフォ） */
+    /* 車番色＋初期位置 */
     .r1 { background:#fff;    color:#000; top:105px; left:570px; }
     .r2 { background:#000;    color:#fff; top:150px; left:705px; }
     .r3 { background:#ff4d4d; color:#000; top:225px; left:780px; }
@@ -176,23 +175,6 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-    }
-
-    /* ▼ スマホ用：バンクを縦画面いっぱいに近づける */
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-
-      .board-wrapper {
-        width: 100vw;         /* 画面幅いっぱい */
-        height: 100vh;        /* 画面高さいっぱい（ほぼフル） */
-      }
-
-      .track {
-        width: 100%;
-        height: 100%;
-      }
     }
   </style>
 </head>
@@ -280,49 +262,13 @@
   const BASE_SIZE = 52;
   let currentGroupMode = null;
 
-  function isMobile() {
-    return window.innerWidth <= 768;
-  }
-
-  // ★ スマホだけ初期位置を中央寄せにする
-  function setMobileInitialPositions() {
-    if (!isMobile()) return;
-
-    const rect = track.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const startY  = 120; // 上からのベース位置（必要なら微調整）
-
-    const positions = [
-      { top: startY +   0, left: centerX - 26 },   // 1番
-      { top: startY +  80, left: centerX - 80 },   // 2番
-      { top: startY + 160, left: centerX - 120 },  // 3番
-      { top: startY + 240, left: centerX - 120 },  // 4番
-      { top: startY + 320, left: centerX - 80 },   // 5番
-      { top: startY + 380, left: centerX - 26 },   // 6番
-      { top: startY + 320, left: centerX + 35 },   // 7番
-      { top: startY + 240, left: centerX + 75 },   // 8番
-      { top: startY + 160, left: centerX + 75 }    // 9番
-    ];
-
-    riders.forEach((r, i) => {
-      r.style.left = positions[i].left + "px";
-      r.style.top  = positions[i].top  + "px";
-    });
-  }
-
   window.addEventListener("load", () => {
-    // スマホなら先に中央寄せしてから、その位置を初期値として記録
-    if (isMobile()) {
-      setMobileInitialPositions();
-    }
-
-    // 初期位置保存（PCはCSSの値、スマホは中央寄せ後の値）
+    // 初期位置保存
     riders.forEach(r => {
       const cs = getComputedStyle(r);
       r.dataset.initLeft = cs.left;
       r.dataset.initTop = cs.top;
     });
-
     applySize("small");
 
     // メモ読み込み（この端末だけ）
@@ -404,7 +350,7 @@
     }
   });
 
-  // ドラッグ開始
+  // ★ 修正済み：ここから ★
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
@@ -439,11 +385,11 @@
       };
     });
 
-    // ※ ここでは preventDefault しない
-    // → スマホの click（タップ）を殺さない
+    // ※ ここで preventDefault しない
+    //    → スマホの click（タップ）が殺されないのでグループ化が効く
   }
+  // ★ 修正済み：ここまで ★
 
-  // ドラッグ中
   function moveDrag(e) {
     if (!isDragging || dragItems.length === 0) return;
 
@@ -474,8 +420,7 @@
       el.style.top = top + "px";
     });
 
-    // ドラッグ中はスクロール防止
-    e.preventDefault();
+    e.preventDefault(); // こっちはドラッグ中なので残してOK（スクロール防止）
   }
 
   function endDrag() {
@@ -504,7 +449,6 @@
     localStorage.removeItem(MEMO_KEY);
   });
 
-  // イベント登録
   track.addEventListener("mousedown", startDrag);
   window.addEventListener("mousemove", moveDrag);
   window.addEventListener("mouseup", endDrag);
