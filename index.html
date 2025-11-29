@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>競輪予想ボード（9車・グループ1〜5対応）</title>
+  <title>競輪予想ボード（9車・グループ1〜5＋メモ付き）</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -130,7 +130,7 @@
     .rider[data-group="4"] { box-shadow: 0 0 0 3px rgba(160,80,255,0.7); }
     .rider[data-group="5"] { box-shadow: 0 0 0 3px rgba(255,0,120,0.7); }
 
-    /* 車番色 */
+    /* 車番色＋初期位置 */
     .r1 { background:#fff;    color:#000; top:105px; left:570px; }
     .r2 { background:#000;    color:#fff; top:150px; left:705px; }
     .r3 { background:#ff4d4d; color:#000; top:225px; left:780px; }
@@ -148,6 +148,34 @@
       text-align: center;
       line-height: 1.6;
     }
+
+    /* メモ欄 */
+    .memo-wrapper {
+      margin-top: 16px;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .memo-title {
+      font-size: 14px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    #memo {
+      width: 100%;
+      min-height: 120px;
+      padding: 8px;
+      font-size: 13px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+    .memo-buttons {
+      margin-top: 4px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
@@ -156,7 +184,7 @@
 
   <!-- 作者Xリンク -->
   <div class="author-box">
-    🎉 作者X（Twitter）： 
+    🎉 作者X（Twitter）：
     <a href="https://x.com/kumatarou_kuma_" target="_blank">@kumatarou_kuma_</a>
   </div>
 
@@ -197,7 +225,17 @@
   <div class="hint">
     ● G1〜G5 → タップで所属変更<br>
     ● グループに入った丸はまとめて移動<br>
-    ● ドラッグ後の誤タップは自動で無効化
+    ● ドラッグ後の誤タップは自動で無効化（グループは勝手に変わらない）
+  </div>
+
+  <!-- メモ欄 -->
+  <div class="memo-wrapper">
+    <div class="memo-title">📝 メモ（この端末だけに保存されます）</div>
+    <textarea id="memo" placeholder="ライン構成、展開予想、コメントなど自由にメモできます。"></textarea>
+    <div class="memo-buttons">
+      <button class="btn" id="saveMemoBtn">メモを保存</button>
+      <button class="btn" id="clearMemoBtn">メモを消去</button>
+    </div>
   </div>
 
 <script>
@@ -210,22 +248,34 @@
   const groupButtons = Array.from(document.querySelectorAll(".group-mode-btn"));
   const clearGroupsBtn = document.getElementById("clearGroupsBtn");
 
+  const memo = document.getElementById("memo");
+  const saveMemoBtn = document.getElementById("saveMemoBtn");
+  const clearMemoBtn = document.getElementById("clearMemoBtn");
+  const MEMO_KEY = "keirin-board-memo-v1";
+
   let isDragging = false;
   let dragItems = [];
   let startX = 0;
   let startY = 0;
-  let didDrag = false;   // ★ドラッグ後の誤クリック防止
+  let didDrag = false;   // ドラッグ後の誤クリック防止
 
   const BASE_SIZE = 52;
   let currentGroupMode = null;
 
   window.addEventListener("load", () => {
+    // 初期位置保存
     riders.forEach(r => {
       const cs = getComputedStyle(r);
       r.dataset.initLeft = cs.left;
       r.dataset.initTop = cs.top;
     });
     applySize("small");
+
+    // メモ読み込み（この端末だけ）
+    const saved = localStorage.getItem(MEMO_KEY);
+    if (saved !== null) {
+      memo.value = saved;
+    }
   });
 
   function applySize(mode) {
@@ -242,7 +292,8 @@
     });
 
     sizeButtons.forEach(b => b.classList.remove("btn-size-active"));
-    sizeButtons.find(b => b.dataset.size === mode).classList.add("btn-size-active");
+    const active = sizeButtons.find(b => b.dataset.size === mode);
+    if (active) active.classList.add("btn-size-active");
   }
 
   sizeButtons.forEach(btn => {
@@ -273,7 +324,7 @@
     return riders.filter(r => r.classList.contains("selected"));
   }
 
-  // ★ドラッグ後の「おまけクリック」を完全無効化
+  // クリック（タップ）時：ドラッグ後のおまけクリックは無視
   track.addEventListener("click", (e) => {
     if (didDrag) {
       didDrag = false;
@@ -378,6 +429,18 @@
   function clearSelection() {
     riders.forEach(r => r.classList.remove("selected"));
   }
+
+  // メモ保存・削除
+  saveMemoBtn.addEventListener("click", () => {
+    localStorage.setItem(MEMO_KEY, memo.value);
+    // 必要ならアラート。うるさければ消してもOK。
+    // alert("メモを保存しました（この端末だけに保存されます）");
+  });
+
+  clearMemoBtn.addEventListener("click", () => {
+    memo.value = "";
+    localStorage.removeItem(MEMO_KEY);
+  });
 
   track.addEventListener("mousedown", startDrag);
   window.addEventListener("mousemove", moveDrag);
