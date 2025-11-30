@@ -15,11 +15,30 @@ body {
     text-align: center;
 }
 
+/* ヒーローヘッダー */
 .hero {
+    position: relative;
     padding: 80px 20px;
-    background: linear-gradient(135deg, #0d47a1, #1a237e);
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
 }
 
+/* 黒幕（文字を読みやすくする） */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.85));
+    pointer-events: none;
+}
+
+.hero-inner {
+    position: relative;
+    z-index: 1;
+}
+
+/* タイトルなど */
 .hero h1 {
     font-size: 40px;
     margin: 0 0 20px;
@@ -32,6 +51,7 @@ body {
     opacity: 0.9;
 }
 
+/* アプリ起動ボタン */
 .btn {
     display: inline-block;
     margin-top: 30px;
@@ -62,15 +82,18 @@ body {
 
 <body>
 
-<div class="hero">
-    <h1>KEIRIN BOARD</h1>
-    <p>競輪の並び・ラインを自由に動かせる予想ツール<br>
-       スマホ・PCどちらでも使える無料アプリ</p>
+<!-- ヒーロー部分 -->
+<div class="hero" id="hero">
+    <div class="hero-inner">
+        <h1>KEIRIN BOARD</h1>
+        <p>競輪の並び・ラインを自由に動かせる予想ツール<br>
+           スマホ・PCどちらでも使える無料アプリ</p>
 
-    <!-- 🔥 ボード本体へのリンク（/board/に変更） -->
-    <a class="btn"
-       href="./board/"
-       target="_blank">▶ アプリを開く</a>
+        <!-- 🔥 ボード本体 -->
+        <a class="btn"
+           href="./board/"
+           target="_blank">▶ アプリを開く</a>
+    </div>
 </div>
 
 <div class="section">
@@ -79,7 +102,7 @@ body {
        ・グループ1〜5でライン管理<br>
        ・スマホ最適化ドラッグ<br>
        ・誤タップ防止ロック搭載<br>
-       ・背景にバンク画像使用可</p>
+       ・バンク名＋特徴表示＋メモ保存</p>
 </div>
 
 <div class="section">
@@ -94,6 +117,37 @@ body {
 <div class="footer">
     © 2025 KEIRIN BOARD
 </div>
+
+
+<!-- ★★ 時間帯で背景自動切り替え ★★ -->
+<script>
+const hero = document.getElementById('hero');
+
+// 昼（曲線）用
+const BG_DAY = 'url("bg_day.jpg")';
+
+// 夜（光輪）用
+const BG_NIGHT = 'url("bg_night.jpg")';
+
+function applyTimeBackground() {
+    const hour = new Date().getHours();
+
+    // 夜：17〜翌4時 → 光輪（迫力あるやつ）
+    if (hour >= 17 || hour <= 4) {
+        hero.style.backgroundImage = BG_NIGHT;
+    } 
+    // 昼：5〜16時 → 曲線（明るめスピードタイプ）
+    else {
+        hero.style.backgroundImage = BG_DAY;
+    }
+
+    hero.style.backgroundSize = 'cover';
+    hero.style.backgroundPosition = 'center';
+}
+
+// 実行
+applyTimeBackground();
+</script>
 
 </body>
 </html>
