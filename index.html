@@ -49,9 +49,32 @@ body {
     font-weight: 900;
 }
 
+/* 元の p 用（他でも使えるように残す） */
 .hero p {
     font-size: 18px;
     opacity: 0.9;
+}
+
+/* ★ キャッチコピー専用スタイル */
+.hero-lead {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin: 0 0 6px;
+}
+
+.hero-lead-sub {
+    font-size: 18px;
+    font-weight: 600;
+    color: #e5e7eb;
+    line-height: 1.6;
+    margin: 0 0 16px;
+}
+
+/* スマホだけ折り返す用 */
+.br-sp { display: none; }
+@media (max-width: 768px) {
+    .br-sp { display: inline; }
 }
 
 .btn {
@@ -65,13 +88,13 @@ body {
     border-radius: 8px;
     text-decoration: none;
     transition: 0.25s ease;
-    box-shadow: 0 0 14px rgba(255, 0, 170, 0.65); /* ←追加：光 */
+    box-shadow: 0 0 14px rgba(255, 0, 170, 0.65);
 }
 
 .btn:hover {
     background: #ff33bb;
-    box-shadow: 0 0 22px rgba(255, 50, 190, 0.85); /* ←ホバー時さらに光る */
-    transform: translateY(-2px); /* ふわっと浮く */
+    box-shadow: 0 0 22px rgba(255, 50, 190, 0.85);
+    transform: translateY(-2px);
 }
 
 .section {
@@ -94,8 +117,15 @@ body {
 <div class="hero" id="hero">
     <div class="hero-inner">
         <h1>KEIRIN BOARD</h1>
-        <p>競輪の並び・ラインを自由に動かせる予想ツール<br>
-           スマホ・PCどちらでも使える無料アプリ</p>
+
+        <!-- ▼ 新キャッチコピー ▼ -->
+        <p class="hero-lead">
+            スマホやPCでサッとライン整理<span class="br-sp"><br></span>競輪予想の新スタイル
+        </p>
+        <p class="hero-lead-sub">
+            最大9車を動かして展開を見える化<span class="br-sp"><br></span>直感操作の競輪ボード
+        </p>
+        <!-- ▲ 新キャッチここまで ▲ -->
 
         <!-- ボード本体へのリンク -->
         <a class="btn"
@@ -133,8 +163,13 @@ body {
 <!-- ========================== -->
 <div class="footer">
     © 2025 KEIRIN BOARD
-</div>
 
+    <!-- ▼ 注意文言（追加） ▼ -->
+    <div style="margin-top:8px; font-size:12px; opacity:0.7;">
+        本ページ・ツールは公営競技主催者等とは一切関係のない個人制作コンテンツです。
+    </div>
+    <!-- ▲ 注意文ここまで ▲ -->
+</div>
 
 <!-- ========================== -->
 <!--   時間帯で背景切替 JS      -->
@@ -151,12 +186,9 @@ const BG_NIGHT = 'url("bg_night.jpg")';
 function applyTimeBackground() {
     const hour = new Date().getHours();
 
-    // 夜：17〜翌4時 → 光輪
     if (hour >= 17 || hour <= 4) {
         hero.style.backgroundImage = BG_NIGHT;
-    } 
-    // 昼：5〜16時 → 曲線
-    else {
+    } else {
         hero.style.backgroundImage = BG_DAY;
     }
 
@@ -169,4 +201,3 @@ applyTimeBackground();
 
 </body>
 </html>
-
