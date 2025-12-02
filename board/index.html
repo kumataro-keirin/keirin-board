@@ -471,6 +471,9 @@
   let baseRadiusScale = 1;  // 6番車の初期位置の距離を基準にする
   let dragPointerAngle0 = 0; // ドラッグ開始時のポインタ角度
 
+  // ★ ドラッグ感度（小さいほどゆっくり動く） 0.2〜0.4 くらいで調整
+  const DRAG_SENSITIVITY = 0.8;
+
   /* ▼ 全バンクマスタ */
   const bankMaster = {
     // 北日本
@@ -562,12 +565,9 @@
     }
   };
 
-  /* ▼ くまナビ追加 customFeature（基本は消さず“足す”だけ） */
-  // ……（この customFeature 部分は、そのままコピペでOKなので省略）
-  // あなたが今使っている customFeature 群を、そのままここに残してください。
-  // －－－－－－－－－－－－－－－－－－－－－－－－－
-  // （※ ここは元コードと同じで良いので、今のファイルからそのまま貼ればOK）
-  // －－－－－－－－－－－－－－－－－－－－－－－－－
+  /* ▼ くまナビ追加 customFeature（ここは元のまま貼ってOK） */
+  // ……今使っている customFeature 群をここに置いてください……
+  /* ▲ customFeature */
 
   // ★ 6番車を基準に「楕円レール」を初期化
   function initRail() {
@@ -663,6 +663,13 @@
     return riders.filter(r => r.classList.contains("selected"));
   }
 
+  // 角度差を -π〜π に正規化（分岐点をまたいだときのガクッを防ぐ）
+  function normalizeAngleDiff(diff) {
+    while (diff > Math.PI)  diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    return diff;
+  }
+
   // ▼ クリック（グループ変更 or 複数選択）
   track.addEventListener("click", (e) => {
     if (didDrag) {
@@ -737,9 +744,16 @@
     const px = clientX - rect.left;
     const py = clientY - rect.top;
 
-    const pointerAngle = Math.atan2(py - ellipseCenterY, px - ellipseCenterX);
+    // 生のポインタ角度
+    const rawPointerAngle = Math.atan2(py - ellipseCenterY, px - ellipseCenterX);
 
-    if (Math.abs(pointerAngle - dragPointerAngle0) > 0.002) {
+    // 開始時との角度差を -π〜π に正規化してから感度を掛ける
+    let angleDiff = normalizeAngleDiff(rawPointerAngle - dragPointerAngle0);
+    const scaledDiff = angleDiff * DRAG_SENSITIVITY;
+
+    const pointerAngle = dragPointerAngle0 + scaledDiff;
+
+    if (Math.abs(scaledDiff) > 0.002) {
       didDrag = true;
     }
 
