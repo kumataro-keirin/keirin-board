@@ -1,203 +1,285 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>KEIRIN BOARD – 配布ページ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>KEIRIN BOARD – 配布ページ</title>
 
-<style>
-body {
-    margin: 0;
-    padding: 0;
-    background: #0a0a0a;
-    color: #fff;
-    font-family: "Roboto", "Noto Sans JP", sans-serif;
-    text-align: center;
-}
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0a0a0a;
+      color: #fff;
+      font-family: "Roboto", "Noto Sans JP", sans-serif;
+      text-align: center;
+    }
 
-/* ヒーローヘッダー */
-.hero {
-    position: relative;
-    padding: 80px 20px;
-    background-size: cover;
-    background-position: center;
-    overflow: hidden;
-}
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-/* 🔥 明るさ調整した黒幕（最適設定） */
-.hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg,
-        rgba(0,0,0,0.18) 0%,
-        rgba(0,0,0,0.30) 50%,
-        rgba(0,0,0,0.18) 100%
-    );
-    pointer-events: none;
-}
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 16px 40px;
+    }
 
-.hero-inner {
-    position: relative;
-    z-index: 1;
-}
+    /* ヒーロー */
+    .hero {
+      padding: 80px 16px 40px;
+      background: radial-gradient(circle at top, #1e3a8a, #020617 60%);
+    }
 
-.hero h1 {
-    font-size: 40px;
-    margin: 0 0 20px;
-    letter-spacing: 2px;
-    font-weight: 900;
-}
+    .hero-title {
+      font-size: 32px;
+      margin-bottom: 8px;
+      letter-spacing: 0.1em;
+    }
 
-/* 元の p 用（他でも使えるように残す） */
-.hero p {
-    font-size: 18px;
-    opacity: 0.9;
-}
+    .hero-sub {
+      font-size: 16px;
+      color: #cbd5f5;
+      margin-bottom: 16px;
+    }
 
-/* ★ キャッチコピー専用スタイル */
-.hero-lead {
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.6;
-    margin: 0 0 6px;
-}
+    .hero-desc {
+      font-size: 14px;
+      color: #e5e7eb;
+      max-width: 640px;
+      margin: 0 auto 24px;
+      line-height: 1.7;
+    }
 
-.hero-lead-sub {
-    font-size: 18px;
-    font-weight: 600;
-    color: #e5e7eb;
-    line-height: 1.6;
-    margin: 0 0 16px;
-}
+    .hero-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      border-radius: 9999px;
+      background: #22c55e;
+      color: #020617;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 10px 25px rgba(34, 197, 94, 0.25);
+      transform: translateY(0);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
+    }
 
-/* スマホだけ折り返す用 */
-.br-sp { display: none; }
-@media (max-width: 768px) {
-    .br-sp { display: inline; }
-}
+    .hero-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 35px rgba(34, 197, 94, 0.3);
+      opacity: 0.95;
+    }
 
-.btn {
-    display: inline-block;
-    margin-top: 30px;
-    padding: 14px 28px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #fff;
-    background: #ff00aa;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: 0.25s ease;
-    box-shadow: 0 0 14px rgba(255, 0, 170, 0.65);
-}
+    .note {
+      font-size: 11px;
+      color: #9ca3af;
+      max-width: 720px;
+      margin: 16px auto 0;
+      line-height: 1.6;
+    }
 
-.btn:hover {
-    background: #ff33bb;
-    box-shadow: 0 0 22px rgba(255, 50, 190, 0.85);
-    transform: translateY(-2px);
-}
+    /* 広告2列レイアウト */
+    .ad-wrapper {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 24px 0 32px;
+    }
 
-.section {
-    padding: 60px 20px;
-}
+    .ad-item {
+      flex: 1 1 300px;
+      max-width: 300px;
+      text-align: center;
+    }
 
-.footer {
-    padding: 20px;
-    opacity: 0.7;
-    font-size: 13px;
-}
-</style>
+    .ad-item img {
+      width: 100%;
+      height: auto;
+      border: 0;
+    }
+
+    /* 機能紹介 */
+    .section {
+      padding: 24px 0 8px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 16px;
+      letter-spacing: 0.08em;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      text-align: left;
+    }
+
+    .feature-card {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .feature-title {
+      font-size: 14px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .feature-text {
+      font-size: 13px;
+      color: #d1d5db;
+      line-height: 1.7;
+    }
+
+    /* 使い方 */
+    .steps {
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: left;
+      font-size: 13px;
+      color: #e5e7eb;
+      line-height: 1.7;
+    }
+
+    .steps ol {
+      padding-left: 20px;
+    }
+
+    .steps li {
+      margin-bottom: 6px;
+    }
+
+    /* フッター */
+    footer {
+      border-top: 1px solid rgba(55, 65, 81, 0.8);
+      padding: 16px;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding-top: 64px;
+      }
+      .hero-title {
+        font-size: 26px;
+      }
+      .hero-sub {
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-<!-- ========================== -->
-<!--      HERO AREA             -->
-<!-- ========================== -->
-<div class="hero" id="hero">
-    <div class="hero-inner">
-        <h1>KEIRIN BOARD</h1>
-
-        <!-- ▼ 新キャッチコピー ▼ -->
-        <p class="hero-lead">
-            スマホやPCでサッとライン整理<span class="br-sp"><br></span>競輪予想の新スタイル
-        </p>
-        <p class="hero-lead-sub">
-            最大9車を動かして展開を見える化<span class="br-sp"><br></span>直感操作の競輪ボード
-        </p>
-        <!-- ▲ 新キャッチここまで ▲ -->
-
-        <!-- ボード本体へのリンク -->
-        <a class="btn"
-           href="./board/"
-           target="_blank">▶ アプリを開く</a>
+  <header class="hero">
+    <div class="container">
+      <h1 class="hero-title">KEIRIN BOARD</h1>
+      <p class="hero-sub">予想メモ &amp; 買い目整理サポートツール</p>
+      <p class="hero-desc">
+        「KEIRIN BOARD」は、レースごとの予想メモや買い目をシンプルに整理できるボードツールです。<br>
+        PCでもスマホでもそのまま使えて、印刷や画面共有にも対応。毎日の予想ルーティンをちょっとだけ快適にします。
+      </p>
+      <a href="./board.html" class="hero-btn">
+        予想ボードを開く
+      </a>
+      <p class="note">
+        本ページ・ツールは公営競技主催者等とは一切関係のない個人制作コンテンツです。<br>
+        ご利用は自己責任でお願いいたします。
+      </p>
     </div>
-</div>
+  </header>
 
-<!-- ========================== -->
-<!--      FUNCTION SECTION      -->
-<!-- ========================== -->
-<div class="section">
-    <h2>機能紹介</h2>
-    <p>・9車の車番を自由に移動可能<br>
-       ・グループ1〜5でライン管理<br>
-       ・スマホ最適化ドラッグ<br>
-       ・誤タップ防止ロック搭載<br>
-       ・バンク名＋特徴表示＋メモ保存</p>
-</div>
-
-<!-- ========================== -->
-<!--      AUTHOR SECTION        -->
-<!-- ========================== -->
-<div class="section">
-    <h2>作者X（Twitter）</h2>
-    <p>
-        <a href="https://x.com/kumatarou_kuma_" target="_blank" style="color:#1da1f2;font-weight:bold;">
-            @kumatarou_kuma_
+  <main class="container">
+    <!-- ★ 広告：機能紹介セクションの上（1行に2つ） -->
+    <!-- AD: 2列レイアウト -->
+    <div class="ad-wrapper">
+      <!-- 広告1 -->
+      <div class="ad-item">
+        <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow">
+          <img
+            src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1"
+            alt="A8広告1"
+          >
         </a>
-    </p>
-</div>
+        <img
+          src="https://www15.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+644DT"
+          width="1" height="1" alt=""
+          style="border:0;"
+        >
+      </div>
 
-<!-- ========================== -->
-<!--         FOOTER             -->
-<!-- ========================== -->
-<div class="footer">
-    © 2025 KEIRIN BOARD
-
-    <!-- ▼ 注意文言（追加） ▼ -->
-    <div style="margin-top:8px; font-size:12px; opacity:0.7;">
-        本ページ・ツールは公営競技主催者等とは一切関係のない個人制作コンテンツです。
+      <!-- 広告2（あとで別案件に差し替えてもOK） -->
+      <div class="ad-item">
+        <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow">
+          <img
+            src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1"
+            alt="A8広告2"
+          >
+        </a>
+        <img
+          src="https://www15.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+644DT"
+          width="1" height="1" alt=""
+          style="border:0;"
+        >
+      </div>
     </div>
-    <!-- ▲ 注意文ここまで ▲ -->
-</div>
+    <!-- /AD -->
 
-<!-- ========================== -->
-<!--   時間帯で背景切替 JS      -->
-<!-- ========================== -->
-<script>
-const hero = document.getElementById('hero');
+    <!-- 機能紹介 -->
+    <section id="features" class="section">
+      <h2 class="section-title">主な機能</h2>
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-title">◎ 予想メモ整理</div>
+          <p class="feature-text">
+            レース番号ごとに、展開メモ・軸・相手などをまとめて記録できます。手書きボードの感覚で、思考をそのまま残せます。
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title">◎ 買い目の書き出し</div>
+          <p class="feature-text">
+            買い目候補を複数パターンで書き出して、最終的な投票だけ絞り込む使い方も可能。スクショや印刷にも向いたレイアウトです。
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title">◎ PC / スマホ両対応</div>
+          <p class="feature-text">
+            ブラウザだけで動くシンプル設計。PCでじっくり、スマホ片手にサクッと、どちらのスタイルでも使えます。
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title">◎ オフラインでも使い方は自由</div>
+          <p class="feature-text">
+            画面を印刷して紙ボードとして使ったり、PDF保存して記録帳として残したり、運用スタイルに合わせて自由にお使いください。
+          </p>
+        </div>
+      </div>
+    </section>
 
-// 昼用（曲線）
-const BG_DAY = 'url("bg_day.jpg")';
+    <!-- 使い方 -->
+    <section class="section">
+      <h2 class="section-title">かんたん使い方</h2>
+      <div class="steps">
+        <ol>
+          <li>ページ上部の「予想ボードを開く」ボタンを押します。</li>
+          <li>対象開催・レース番号ごとにメモや買い目を入力します。</li>
+          <li>必要に応じてスクリーンショットや印刷で保存します。</li>
+          <li>自分の予想ルーティンに合う形で、メモ帳代わりに使ってください。</li>
+        </ol>
+      </div>
+    </section>
+  </main>
 
-// 夜用（光輪）
-const BG_NIGHT = 'url("bg_night.jpg")';
-
-function applyTimeBackground() {
-    const hour = new Date().getHours();
-
-    if (hour >= 17 || hour <= 4) {
-        hero.style.backgroundImage = BG_NIGHT;
-    } else {
-        hero.style.backgroundImage = BG_DAY;
-    }
-
-    hero.style.backgroundSize = 'cover';
-    hero.style.backgroundPosition = 'center';
-}
-
-applyTimeBackground();
-</script>
-
+  <footer>
+    &copy; 2025 KEIRIN BOARD / 個人制作ツールです。公営競技の主催者・施行者・関連団体とは一切関係ありません。
+  </footer>
 </body>
 </html>
