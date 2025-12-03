@@ -376,26 +376,34 @@
   </div>
   
 <!-- メモ上広告（複数OK） -->
-<div class="ads-multi">
-
-  <div class="ad-item">
-    <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
-       rel="nofollow"
-       target="_blank">
-      無料会員登録で最大3000円分もらえる
-    </a>
-    <img src="https://www19.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" width="1" height="1" alt="">
-  </div>
-
-  <!-- 追加例（コピーして増やすだけ） -->
-  <div class="ad-item">
-    <a href="https://example.com" rel="nofollow" target="_blank">
-      🎯 他の広告リンク
-    </a>
-  </div>
-
-</div>
-
+    .ads-multi {
+      margin-top: 12px;
+      margin-bottom: 8px;
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .ad-item {
+      flex: 1 1 260px;
+      min-width: 220px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    .ad-item a {
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .ad-item a:hover {
+      text-decoration: underline;
+    }
+  
   <!-- メモ欄 -->
   <div class="memo-wrapper">
     <div class="memo-title">📝 メモ（この端末だけに保存されます）</div>
