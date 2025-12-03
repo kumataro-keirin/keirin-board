@@ -90,7 +90,7 @@ a {
     .br-sp { display: inline; }
 }
 
-/* ▼ ボタン共通（完全統一） */
+/* ▼ ボタン共通 */
 .btn {
     display: inline-block;
     width: 180px;
@@ -154,7 +154,6 @@ a {
     text-align: left;
 }
 
-/* ← ここドット付きが正解！ */
 .feature-card {
     background: rgba(36, 53, 80, 0.85);
     border-radius: 16px;
@@ -196,7 +195,7 @@ footer {
     margin-top: 24px;
 }
 
-/* 広告（枠なし設定含む） */
+/* 広告（枠なし設定） */
 .ad-wrapper {
     display: flex;
     justify-content: center;
@@ -205,32 +204,24 @@ footer {
     margin: 32px 0 24px;
 }
 
-/* 広告カードの見た目を統一 */
 .ad-item {
-    flex: 1 1 260px;
-    max-width: 320px;
+    flex: 1 1 auto;
+    max-width: auto;
     text-align: center;
+    background: none;
+    padding: 0;
     border: none;
-    outline: none;
-    background: #111;        /* 共通の黒カード */
-    padding: 6px;            /* 少し余白 */
-    border-radius: 8px;      /* 角丸 */
-    display: flex;
-    align-items: center;
-    justify-content: center; /* 中央に配置 */
+    border-radius: 0;
+    display: block;
 }
 
 .ad-item img {
     width: 100%;
     height: auto;
     display: block;
-    border-radius: 4px;
-
-    /* ★ 黒の枠（ここが重要） */
-    border: 4px solid #000 !important;
+    border: none;
     box-sizing: border-box;
 }
-
 </style>
 </head>
 
@@ -265,23 +256,24 @@ footer {
 <!-- 広告 -->
 <div class="ad-wrapper">
 
-  <!-- A8広告 -->
+  <!-- A8広告 1つ目 -->
   <div class="ad-item">
     <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow">
       <img src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1" alt="">
     </a>
+    <img border="0" width="1" height="1"
+         src="https://www14.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+644DT" alt="">
   </div>
 
-<!-- A8広告（差し替え済） -->
-<div class="ad-item">
-  <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TV9LT" rel="nofollow">
-    <img border="0" width="200" height="200" alt=""
-         src="https://www28.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017110000&mc=1">
-  </a>
-  <img border="0" width="1" height="1"
-       src="https://www19.a8.net/0.gif?a8mat=45K5P6+B5A6IA+3RK+2TV9LT"
-       alt="">
-</div>
+  <!-- A8広告 2つ目（336x280・カード背景なし） -->
+  <div class="ad-item">
+    <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TW4GX" rel="nofollow">
+      <img border="0" width="336" height="280" alt=""
+           src="https://www29.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017114000&mc=1">
+    </a>
+    <img border="0" width="1" height="1"
+         src="https://www10.a8.net/0.gif?a8mat=45K5P6+B5A6IA+3RK+2TW4GX" alt="">
+  </div>
 
 </div>
 
@@ -373,8 +365,3 @@ applyTimeBackground();
 
 </body>
 </html>
-
-
-
-
-
