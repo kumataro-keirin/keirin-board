@@ -89,7 +89,7 @@ a {
     .br-sp { display: inline; }
 }
 
-/* ▼ ボタン共通 */
+/* ▼ ボタン */
 .btn {
     display: inline-block;
     width: 180px;
@@ -98,11 +98,9 @@ a {
     font-weight: bold;
     color: #fff;
     border-radius: 8px;
-    text-decoration: none;
     transition: 0.25s ease;
     border: 1px solid transparent;
     box-shadow: 0 0 10px rgba(0,0,0,0.4);
-    text-align: center;
 }
 
 .btn-main {
@@ -119,13 +117,12 @@ a {
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 18px rgba(255,255,255,0.35);
 }
 
 .version-buttons {
     margin-top: 30px;
     display: flex;
-    flex-wrap: wrap;
     gap: 12px;
     justify-content: center;
 }
@@ -150,23 +147,14 @@ a {
 }
 
 .feature-card {
-    background: rgba(36, 53, 80, 0.85);
+    background: rgba(36,53,80,0.85);
     border-radius: 16px;
     padding: 16px 18px;
     border: 1px solid rgba(148,163,184,0.35);
 }
 
-.feature-title {
-    font-size: 14px;
-    margin-bottom: 6px;
-    font-weight: 700;
-}
-
-.feature-text {
-    font-size: 13px;
-    color: #d1d5db;
-    line-height: 1.7;
-}
+.feature-title { font-size: 14px; margin-bottom: 6px; font-weight: 700; }
+.feature-text { font-size: 13px; color: #d1d5db; line-height: 1.7; }
 
 /* 使い方 */
 .steps {
@@ -190,15 +178,15 @@ footer {
     margin-top: 24px;
 }
 
-/* ===================== */
-/*   広告（横並び）       */
-/* ===================== */
+/* ====================== */
+/*   広告（横並び）最適化  */
+/* ====================== */
 .ad-wrapper {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 20px; /* 広告間の余白 */
-    margin: 32px 0 24px;
+    gap: 20px;
+    margin: 28px 0 10px;  /* ★ 下だけ 10px にして主な機能と距離を詰める */
 }
 
 .ad-item img {
@@ -232,7 +220,7 @@ footer {
 </div>
 
 <!-- ========================== -->
-<!--        広告：横並び        -->
+<!--        広告（横並び）      -->
 <!-- ========================== -->
 
 <div class="ad-wrapper">
@@ -245,11 +233,10 @@ footer {
     </a>
   </div>
 
-  <!-- ★ 広告2：A8広告（指定のもの） -->
+  <!-- ★ 広告2：A8広告 -->
   <div class="ad-item">
     <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" rel="nofollow">
-      <img src="https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1"
-           alt="">
+      <img src="https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1" alt="">
     </a>
     <img border="0" width="1" height="1"
          src="https://www17.a8.net/0.gif?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" alt="">
@@ -318,7 +305,7 @@ footer {
 </footer>
 
 <!-- ========================== -->
-<!--  時間帯で背景切替（昼/夜） -->
+<!--  昼夜切替スクリプト         -->
 <!-- ========================== -->
 <script>
 const hero = document.getElementById('hero');
