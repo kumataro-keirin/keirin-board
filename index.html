@@ -84,7 +84,6 @@ a {
     text-shadow: 0 2px 4px rgba(0,0,0,0.28);
 }
 
-/* スマホ折返し */
 .br-sp { display: none; }
 @media (max-width: 768px) {
     .br-sp { display: inline; }
@@ -106,27 +105,23 @@ a {
     text-align: center;
 }
 
-/* 追随版 */
 .btn-main {
     background: #ff00aa;
     border-color: #ff00aa;
     box-shadow: 0 0 14px rgba(255, 0, 170, 0.65);
 }
 
-/* フリー移動版 */
 .btn-sub {
     background: #ff9800;
     border-color: #ffb74d;
-    box-shadow: 0 0 14px rgba(255, 152, 0, 0.6);
+    box-shadow: 0 0 14px rgba(255,152,0,0.60);
 }
 
-/* ホバー */
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
 }
 
-/* ボタン2つ横並び */
 .version-buttons {
     margin-top: 30px;
     display: flex;
@@ -158,7 +153,7 @@ a {
     background: rgba(36, 53, 80, 0.85);
     border-radius: 16px;
     padding: 16px 18px;
-    border: 1px solid rgba(148, 163, 184, 0.35);
+    border: 1px solid rgba(148,163,184,0.35);
 }
 
 .feature-title {
@@ -188,7 +183,7 @@ a {
 
 /* フッター */
 footer {
-    border-top: 1px solid rgba(55, 65, 81, 0.8);
+    border-top: 1px solid rgba(55,65,81,0.8);
     padding: 16px;
     font-size: 11px;
     color: #9ca3af;
@@ -196,24 +191,20 @@ footer {
 }
 
 /* ===================== */
-/*   広告（カード無し）   */
+/*   広告（横並び）       */
 /* ===================== */
 .ad-wrapper {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 22px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px; /* 広告間の余白 */
     margin: 32px 0 24px;
-}
-
-.ad-item {
-    text-align: center;
 }
 
 .ad-item img {
     width: 100%;
+    max-width: 336px; /* チャリロト基準 */
     height: auto;
-    max-width: 336px; /* ★ チャリロト広告に合わせて統一 */
     display: block;
 }
 
@@ -229,43 +220,36 @@ footer {
   <div class="hero-inner">
     <h1>KEIRIN BOARD</h1>
 
-    <p class="hero-lead">
-      スマホやPCでサッとライン整理<br class="br-sp">【競輪予想の新スタイル】
-    </p>
-    <p class="hero-lead-sub">
-      最大9車を動かして展開を見える化<br class="br-sp">【直感操作の競輪ボード】
-    </p>
-    <p class="hero-lead-sub">
-      仲間と画面を見ながら情報共有<br class="br-sp">で予想精度も上がるかも!?
-    </p>
+    <p class="hero-lead">スマホやPCでサッとライン整理<br class="br-sp">【競輪予想の新スタイル】</p>
+    <p class="hero-lead-sub">最大9車を動かして展開を見える化<br class="br-sp">【直感操作の競輪ボード】</p>
+    <p class="hero-lead-sub">仲間と画面を見ながら情報共有<br class="br-sp">で予想精度も上がるかも!?</p>
 
     <div class="version-buttons">
       <a class="btn btn-main" href="./board/" target="_blank">▶ 追随版</a>
       <a class="btn btn-sub" href="./free/" target="_blank">▶ フリー移動版</a>
     </div>
-
   </div>
 </div>
 
 <!-- ========================== -->
-<!--        広告エリア          -->
+<!--        広告：横並び        -->
 <!-- ========================== -->
 
 <div class="ad-wrapper">
 
-  <!-- ★ 広告1：チャリロト（残す） -->
+  <!-- ★ 広告1：チャリロト -->
   <div class="ad-item">
     <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow">
       <img src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1"
-           alt="チャリロト" width="336" height="280">
+           alt="チャリロト">
     </a>
   </div>
 
-  <!-- ★ 広告2：指定の A8広告 -->
+  <!-- ★ 広告2：A8広告（指定のもの） -->
   <div class="ad-item">
     <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" rel="nofollow">
-      <img border="0" width="336" height="280" alt=""
-           src="https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1">
+      <img src="https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1"
+           alt="">
     </a>
     <img border="0" width="1" height="1"
          src="https://www17.a8.net/0.gif?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" alt="">
@@ -276,6 +260,7 @@ footer {
 <!-- ========================== -->
 <!--      主な機能              -->
 <!-- ========================== -->
+
 <section id="features" class="section">
   <h2 class="section-title">主な機能</h2>
 
@@ -283,51 +268,46 @@ footer {
 
     <div class="feature-card">
       <div class="feature-title">◎ 予想メモ整理</div>
-      <p class="feature-text">競輪場の特徴を見ながら、展開メモ・軸・相手を整理できます。</p>
+      <p class="feature-text">競輪場の特徴を見ながら展開をメモできます。</p>
     </div>
 
     <div class="feature-card">
       <div class="feature-title">◎ 買い目の書き出し</div>
-      <p class="feature-text">買い目を複数ストックでき、後で比較しながら決定できます。</p>
+      <p class="feature-text">複数の買い目を整理して最終決定できます。</p>
     </div>
 
     <div class="feature-card">
-      <div class="feature-title">◎ PC / スマホ両対応</div>
-      <p class="feature-text">アプリ不要、ブラウザだけで動作します。</p>
+      <div class="feature-title">◎ PC/スマホ対応</div>
+      <p class="feature-text">アプリ不要、ブラウザで動作します。</p>
     </div>
 
     <div class="feature-card">
-      <div class="feature-title">◎ 印刷・PDF保存</div>
-      <p class="feature-text">スクショや印刷など自由に保存して活用できます。</p>
+      <div class="feature-title">◎ PDF/印刷対応</div>
+      <p class="feature-text">保存・印刷して予想帳として活用できます。</p>
     </div>
 
   </div>
 </section>
 
-<!-- ========================== -->
-<!--        使い方              -->
-<!-- ========================== -->
+<!-- 使い方 -->
 <section class="section">
   <h2 class="section-title">使い方かんたん</h2>
-
   <div class="steps">
     <ol>
-      <li>ページ上部から「追随版」または「フリー移動版」を選ぶ。</li>
-      <li>競輪場を選択。</li>
-      <li>ラインを動かして展開を視覚化。</li>
-      <li>印刷・スクショで保存。</li>
+      <li>追随版 or フリー移動版 を選ぶ</li>
+      <li>競輪場を選択</li>
+      <li>ラインを動かして展開を視覚化</li>
+      <li>スクショ or 印刷で保存</li>
     </ol>
   </div>
 </section>
 
-<!-- ========================== -->
-<!--       作者リンク           -->
-<!-- ========================== -->
+<!-- 作者 -->
 <section class="section">
   <h2 class="section-title">作者X（Twitter）</h2>
   <p>
     <a href="https://x.com/kumatarou_kuma_" target="_blank"
-       style="color:#1da1f2; font-weight:bold;">
+       style="color:#1da1f2;font-weight:bold;">
       @kumatarou_kuma_
     </a>
   </p>
@@ -338,7 +318,7 @@ footer {
 </footer>
 
 <!-- ========================== -->
-<!--     背景切り替え（昼夜）   -->
+<!--  時間帯で背景切替（昼/夜） -->
 <!-- ========================== -->
 <script>
 const hero = document.getElementById('hero');
