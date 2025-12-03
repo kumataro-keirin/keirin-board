@@ -65,14 +65,14 @@ a {
     opacity: 0.9;
 }
 
-/* キャッチコピー */
+/* キャッチコピー：読みやすい白 */
 .hero-lead {
     font-size: 22px;
     font-weight: 900;
     line-height: 1.6;
     margin: 0 0 6px;
-    color: #ffffff; /* 完全白 */
-    text-shadow: 0 2px 4px rgba(0,0,0,0.35); /* 影は控えめ＆シャープ */
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.35);
 }
 
 .hero-lead-sub {
@@ -154,7 +154,7 @@ a {
     text-align: left;
 }
 
-.feature-card {
+feature-card {
     background: rgba(36, 53, 80, 0.85);
     border-radius: 16px;
     padding: 16px 18px;
@@ -195,7 +195,7 @@ footer {
     margin-top: 24px;
 }
 
-/* 広告 */
+/* 広告（枠なし設定含む） */
 .ad-wrapper {
     display: flex;
     justify-content: center;
@@ -208,12 +208,16 @@ footer {
     flex: 1 1 300px;
     max-width: 300px;
     text-align: center;
+    border: none !important;
+    outline: none !important;
 }
 
 .ad-item img {
     width: 100%;
     height: auto;
-    border: 0;
+    border: none !important;
+    outline: none !important;
+    display: block;
 }
 
 </style>
@@ -229,24 +233,16 @@ footer {
     <h1>KEIRIN BOARD</h1>
 
     <p class="hero-lead">
-      スマホやPCでサッとライン整理<span class="br-sp"><br></span>【競輪予想の新スタイル】
+      スマホやPCでサッとライン整理<br class="br-sp">競輪予想の新スタイル
     </p>
     <p class="hero-lead-sub">
-      最大9車を動かして展開を見える化<span class="br-sp"><br></span>【直感操作の競輪ボード】
-    </p>
-       <p class="hero-lead-sub">
-      仲間と画面を見ながら情報共有<span class="br-sp"><br></span>で予想制度も上がるかも！？
+      最大9車を動かして展開を見える化<br class="br-sp">直感操作の競輪ボード
     </p>
 
     <!-- ▼ 追随版 / フリー移動版 -->
     <div class="version-buttons">
-      <a class="btn btn-main"
-         href="./board/"
-         target="_blank">▶ 追随版</a>
-
-      <a class="btn btn-sub"
-         href="./free/"
-         target="_blank">▶ フリー移動版</a>
+      <a class="btn btn-main" href="./board/" target="_blank">▶ 追随版</a>
+      <a class="btn btn-sub" href="./free/" target="_blank">▶ フリー移動版</a>
     </div>
 
   </div>
@@ -255,21 +251,20 @@ footer {
 <!-- 広告 -->
 <div class="ad-wrapper">
 
-  <!-- A8広告（そのまま残す） -->
+  <!-- A8広告（残す） -->
   <div class="ad-item">
     <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow">
       <img src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1" alt="">
     </a>
   </div>
 
-  <!-- ★ ACCESSTRADE広告（ここに差し替え） -->
+  <!-- ACCESSTRADE広告（枠なし） -->
   <div class="ad-item">
     <a href="https://h.accesstrade.net/sp/cc?rk=0100k9ph00olo8"
        rel="nofollow"
        referrerpolicy="no-referrer-when-downgrade">
       <img src="https://h.accesstrade.net/sp/rr?rk=0100k9ph00olo8"
-           alt="777タウン.net 【無料会員登録】"
-           border="0" />
+           alt="777タウン.net 【無料会員登録】" />
     </a>
   </div>
 
@@ -284,28 +279,28 @@ footer {
     <div class="feature-card">
       <div class="feature-title">◎ 予想メモ整理</div>
       <p class="feature-text">
-        競輪場の特徴を見ながら、展開メモ・軸・相手などをまとめて記録できます。
+        レース番号ごとに、展開メモ・軸・相手などをまとめて記録できます。
       </p>
     </div>
 
     <div class="feature-card">
       <div class="feature-title">◎ 買い目の書き出し</div>
       <p class="feature-text">
-        複数の買い目候補を書き出し、保存して考えながら最終決定する運用も可能です。
+        複数の買い目候補を書き出して、最終決定だけ絞る運用も可能です。
       </p>
     </div>
 
     <div class="feature-card">
       <div class="feature-title">◎ PC / スマホ両対応</div>
       <p class="feature-text">
-        ブラウザだけで動くので、どの端末からでも使いやすい設計です。
+        ブラウザだけで動くので、スマホでもPCでも快適に使えます。
       </p>
     </div>
 
     <div class="feature-card">
       <div class="feature-title">◎ 印刷・PDF保存も自由</div>
       <p class="feature-text">
-        メモ保存ができるので印刷・スクショで予想帳として残すなど、自由に活用できます。
+        スクショ・印刷して予想帳のように使うこともできます。
       </p>
     </div>
 
@@ -320,7 +315,7 @@ footer {
     <ol>
       <li>ページ上部から「追随版」または「フリー移動版」を選ぶ。</li>
       <li>競輪場を選ぶ。</li>
-      <li>ラインを形成し、展開を視覚化しながら予想する。</li>
+      <li>ラインを組んで展開を視覚化する。</li>
       <li>スクショ・印刷で保存して活用する。</li>
     </ol>
   </div>
@@ -363,11 +358,3 @@ applyTimeBackground();
 
 </body>
 </html>
-
-
-
-
-
-
-
-
