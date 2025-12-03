@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -191,13 +189,13 @@
     .r9 { background:#b366ff; color:#000; top:225px; left:360px; }
 
     .hint {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #555;
-  text-align: left;      /* ★ 中央 → 左寄せに変更 */
-  line-height: 1.8;
-  max-width: 1200px;
-}
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+      text-align: left;
+      line-height: 1.8;
+      max-width: 1200px;
+    }
 
     /* メモ欄 */
     .memo-wrapper {
@@ -226,13 +224,43 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+
+    /* メモ上広告（複数OK） */
+    .ads-multi {
+      margin-top: 12px;
+      margin-bottom: 8px;
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .ad-item {
+      flex: 1 1 260px;
+      min-width: 220px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    .ad-item a {
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .ad-item a:hover {
+      text-decoration: underline;
+    }
+
     /* ★ バージョン表記用 ★ */
-  .version-box {
-    margin-top: 2px;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: #666;
-  }
+    .version-box {
+      margin-top: 2px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
@@ -374,35 +402,20 @@
     ● ドラッグ後の誤タップは自動で無効化（グループは勝手に変わらない）<br>
     ● 買目や予想、気になることをメモとして残せる・保存を押せば閉じても消えない
   </div>
-  
-    /* メモ上広告（複数OK） */
-    .ads-multi {
-      margin-top: 12px;
-      margin-bottom: 8px;
-      width: 100%;
-      max-width: 1200px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      font-size: 13px;
-    }
-    .ad-item {
-      flex: 1 1 260px;
-      min-width: 220px;
-      background: #fff;
-      border-radius: 8px;
-      padding: 8px 10px;
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
-    .ad-item a {
-      color: #0066cc;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .ad-item a:hover {
-      text-decoration: underline;
-    }
+
+  <!-- メモ上広告（複数OK） -->
+  <div class="ads-multi">
+    <!-- ▼サンプル：ここに好きな広告を複数入れてOK ▼ -->
+    <div class="ad-item">
+      <a href="https://example.com" target="_blank">競輪情報サイトA</a><br>
+      単純回収率やライン傾向をチェックできる便利サイト。
+    </div>
+    <div class="ad-item">
+      <a href="https://example.com" target="_blank">オッズ比較ツールB</a><br>
+      複数サイトのオッズを一括比較できるツール。
+    </div>
+    <!-- ↑実際のアフィタグに差し替えて使ってください -->
+  </div>
 
   <!-- メモ欄 -->
   <div class="memo-wrapper">
@@ -914,8 +927,3 @@
 
 </body>
 </html>
-
-
-
-
-
