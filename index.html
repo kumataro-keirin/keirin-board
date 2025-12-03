@@ -65,7 +65,7 @@ a {
     opacity: 0.9;
 }
 
-/* キャッチコピー：読みやすい白 */
+/* キャッチコピー */
 .hero-lead {
     font-size: 22px;
     font-weight: 900;
@@ -106,27 +106,25 @@ a {
     text-align: center;
 }
 
-/* 追随版（ピンク） */
+/* 追随版 */
 .btn-main {
     background: #ff00aa;
     border-color: #ff00aa;
     box-shadow: 0 0 14px rgba(255, 0, 170, 0.65);
 }
 
-/* フリー移動版（オレンジ） */
+/* フリー移動版 */
 .btn-sub {
     background: #ff9800;
     border-color: #ffb74d;
     box-shadow: 0 0 14px rgba(255, 152, 0, 0.6);
 }
 
-/* ホバー */
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
 }
 
-/* ボタン2つ横並び */
 .version-buttons {
     margin-top: 30px;
     display: flex;
@@ -195,32 +193,26 @@ footer {
     margin-top: 24px;
 }
 
-/* 広告（枠なし設定） */
+/* 広告（カードなし・サイズ統一） */
 .ad-wrapper {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 24px;
     margin: 32px 0 24px;
 }
 
 .ad-item {
-    flex: 1 1 auto;
-    max-width: auto;
-    text-align: center;
-    background: none;
-    padding: 0;
-    border: none;
-    border-radius: 0;
     display: block;
 }
 
 .ad-item img {
     width: 100%;
+    max-width: 320px;   /* ← 広告①と完全に同じサイズ */
     height: auto;
     display: block;
+    margin: 0 auto;
     border: none;
-    box-sizing: border-box;
 }
 </style>
 </head>
@@ -244,7 +236,6 @@ footer {
       仲間と画面を見ながら情報共有<br class="br-sp">で予想精度も上がるかも!?
     </p>
 
-    <!-- ▼ 追随版 / フリー移動版 -->
     <div class="version-buttons">
       <a class="btn btn-main" href="./board/" target="_blank">▶ 追随版</a>
       <a class="btn btn-sub" href="./free/" target="_blank">▶ フリー移動版</a>
@@ -256,7 +247,7 @@ footer {
 <!-- 広告 -->
 <div class="ad-wrapper">
 
-  <!-- A8広告 1つ目 -->
+  <!-- A8広告① -->
   <div class="ad-item">
     <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow">
       <img src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1" alt="">
@@ -265,7 +256,7 @@ footer {
          src="https://www14.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+644DT" alt="">
   </div>
 
-  <!-- A8広告 2つ目（336x280・カード背景なし） -->
+  <!-- A8広告②（指定バナー・サイズ統一） -->
   <div class="ad-item">
     <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TW4GX" rel="nofollow">
       <img border="0" width="336" height="280" alt=""
