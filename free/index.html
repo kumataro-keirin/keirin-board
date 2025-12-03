@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -18,14 +20,6 @@
       margin-bottom: 5px;
       font-size: 22px;
       font-weight: 900;
-    }
-
-    /* ★ バージョン表記用 ★ */
-    .version-box {
-      margin-top: 2px;
-      margin-bottom: 10px;
-      font-size: 12px;
-      color: #666;
     }
 
     /* 作者リンク表示 */
@@ -197,42 +191,13 @@
     .r9 { background:#b366ff; color:#000; top:225px; left:360px; }
 
     .hint {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #555;
-      text-align: left;
-      line-height: 1.8;
-      max-width: 1200px;
-    }
-
-    /* メモ上広告（複数OK） */
-    .ads-multi {
-      margin-top: 12px;
-      margin-bottom: 8px;
-      width: 100%;
-      max-width: 1200px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      font-size: 13px;
-    }
-    .ad-item {
-      flex: 1 1 260px;
-      min-width: 220px;
-      background: #fff;
-      border-radius: 8px;
-      padding: 8px 10px;
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
-    .ad-item a {
-      color: #0066cc;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .ad-item a:hover {
-      text-decoration: underline;
-    }
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+  text-align: left;      /* ★ 中央 → 左寄せに変更 */
+  line-height: 1.8;
+  max-width: 1200px;
+}
 
     /* メモ欄 */
     .memo-wrapper {
@@ -261,6 +226,13 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+    /* ★ バージョン表記用 ★ */
+  .version-box {
+    margin-top: 2px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #666;
+  }
   </style>
 </head>
 <body>
@@ -403,26 +375,26 @@
     ● 買目や予想、気になることをメモとして残せる・保存を押せば閉じても消えない
   </div>
   
-  <!-- メモ上広告（複数OK） -->
-  <div class="ads-multi">
+<!-- メモ上広告（複数OK） -->
+<div class="ads-multi">
 
-    <div class="ad-item">
-      <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
-         rel="nofollow"
-         target="_blank">
-        無料会員登録で最大3000円分もらえる
-      </a>
-      <img src="https://www19.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" width="1" height="1" alt="">
-    </div>
-
-    <!-- 追加例（コピーして増やすだけ） -->
-    <div class="ad-item">
-      <a href="https://example.com" rel="nofollow" target="_blank">
-        🎯 他の広告リンク
-      </a>
-    </div>
-
+  <div class="ad-item">
+    <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
+       rel="nofollow"
+       target="_blank">
+      無料会員登録で最大3000円分もらえる
+    </a>
+    <img src="https://www19.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" width="1" height="1" alt="">
   </div>
+
+  <!-- 追加例（コピーして増やすだけ） -->
+  <div class="ad-item">
+    <a href="https://example.com" rel="nofollow" target="_blank">
+      🎯 他の広告リンク
+    </a>
+  </div>
+
+</div>
 
   <!-- メモ欄 -->
   <div class="memo-wrapper">
@@ -458,21 +430,12 @@
 
   let isDragging = false;
   let dragItems = [];
+  let startX = 0;
+  let startY = 0;
   let didDrag = false;   // ドラッグ後の誤クリック防止
 
   const BASE_SIZE = 52;
   let currentGroupMode = null;
-
-  // ★ 楕円レール用パラメータ（6番車を基準に自動調整）
-  let ellipseCenterX = 0;
-  let ellipseCenterY = 0;
-  let ellipseRx = 0;
-  let ellipseRy = 0;
-  let baseRadiusScale = 1;  // 6番車の初期位置の距離を基準にする
-  let dragPointerAngle0 = 0; // ドラッグ開始時のポインタ角度
-
-  // ★ ドラッグ感度（小さいほどゆっくり動く） 0.2〜0.4 くらいで調整
-  const DRAG_SENSITIVITY = 0.8;
 
   /* ▼ 全バンクマスタ */
   const bankMaster = {
@@ -565,40 +528,146 @@
     }
   };
 
-  /* ▼ くまナビ追加 customFeature（ここは元のまま貼ってOK） */
-  // ……今使っている customFeature 群をここに置いてください……
-  /* ▲ customFeature */
+  /* ▼ くまナビ追加 customFeature（基本は消さず“足す”だけ） */
 
-  // ★ 6番車を基準に「楕円レール」を初期化
-  function initRail() {
-    const rect = track.getBoundingClientRect();
-    ellipseCenterX = rect.width / 2;
-    ellipseCenterY = rect.height / 2;
+  // 北日本
+  bankMaster.hakodate.customFeature =
+    "海風でバック向かい風が多く、逃げの踏み直しが必要。ナイターは外伸びが効きやすい。";
 
-    // まずは「標準楕円」の大きさをざっくり決める
-    const baseRx = rect.width  * 0.40;
-    const baseRy = rect.height * 0.43;
+  bankMaster.aomori.customFeature =
+    "風で展開が激変。向かい風日は差し有利、3番手浮上も多い。";
 
-    const r6 = document.querySelector(".r6");
-    if (!r6) return;
+  bankMaster.iwakidaira.customFeature =
+    "まくりが強烈に決まることが多い。S級戦はホーム手前の位置取りが重要。";
 
-    const r6Rect = r6.getBoundingClientRect();
-    const r6cx = (r6Rect.left - rect.left) + r6Rect.width / 2;
-    const r6cy = (r6Rect.top  - rect.top)  + r6Rect.height / 2;
+  // 関東
+  bankMaster.yahiko.customFeature =
+    "ホーム側の風で展開が変わりやすい。地元先行時は番手の差しが強い。";
 
-    const dx = r6cx - ellipseCenterX;
-    const dy = r6cy - ellipseCenterY;
-    const angle = Math.atan2(dy, dx);
+  bankMaster.maebashi.customFeature =
+    "カント強めで自力勝負になりやすい。番手が離れやすく自力同士の踏み合いも多い。";
 
-    const idealRx = baseRx * Math.cos(angle);
-    const idealRy = baseRy * Math.sin(angle);
-    const idealR  = Math.hypot(idealRx, idealRy) || 1;
-    const actualR = Math.hypot(dx, dy);
+  bankMaster.toride.customFeature =
+    "直線が効きやすく、捲りが届く日が多い。3番手浮上もある。";
 
-    baseRadiusScale = actualR / idealR; // ← 6番車の距離にピッタリ合うようにスケーリング
-    ellipseRx = baseRx;
-    ellipseRy = baseRy;
-  }
+  bankMaster.utsunomiya.customFeature =
+    "500バンクで差し・捲りが届く。逃げ切りは風弱＋ライン強力な時のみ。";
+
+  bankMaster.omiya.customFeature =
+    "風で傾向が激変。差し有利になりやすく追い込み勢の台頭が多い。";
+
+  bankMaster.seibuen.customFeature =
+    "夏場は重いバンクで逃げ残り減。冬場はまくりのキレが増す。";
+
+  bankMaster.keio.customFeature =
+    "差し・捲りがどちらも決まりやすいバランス型。ナイターは捲り強め。";
+
+  bankMaster.tachikawa.customFeature =
+    "直線長めで差し有利。冬は逃げ壊滅の傾向が強い。";
+
+  // 南関東
+  bankMaster.matsudo.customFeature =
+    "33バンクでも捲りが意外と届く。イン粘りはリスク高め。";
+
+  bankMaster.chiba.customFeature =
+    "屋内250mで完全スプリント型。風影響ゼロで純粋な脚力勝負。";
+
+  bankMaster.kawasaki.customFeature =
+    "ナイター時は差し優勢。直線短いが捲りもよく伸びる。";
+
+  bankMaster.hiratsuka.customFeature =
+    "潮風でバック向かい風の日は差し浮上。外伸びが全体的に強い。";
+
+  bankMaster.odawara.customFeature =
+    "33特有のコーナー鋭く後方は届きにくい。ライン3車が強い。";
+
+  bankMaster.ito.customFeature =
+    "ナイターは差し寄り。冬場はまくり鋭く決まりやすい。";
+
+  bankMaster.shizuoka.customFeature =
+    "スピード決着多い。ライン3番手の3着突っ込みが起こりやすい。";
+
+  // 中部
+  bankMaster.nagoya.customFeature =
+    "夏場は重くなり逃げ辛い。カント浅めで差しがよく伸びる。";
+
+  bankMaster.gifu.customFeature =
+    "自力同士の勝負が多い。イン突きの成功率やや高め。";
+
+  bankMaster.ogaki.customFeature =
+    "雨の日は非常に伸びる。踏み直しが利かないと置かれやすい。";
+
+  bankMaster.toyohashi.customFeature =
+    "風影響が強く、レースごとに傾向変化。3番手浮上パターンがある。";
+
+  bankMaster.toyama.customFeature =
+    "33らしい先行有利＋まくり鋭い。夏場は差しが弱くなる傾向。";
+
+  bankMaster.matsusaka.customFeature =
+    "内外どちらも伸びやすく展開が難しい。近畿勢ライン強い。";
+
+  bankMaster.yokkaichi.customFeature =
+    "ナイターは伸びる。最終バックの風向きでレース結果が変わる。";
+
+  // 近畿
+  bankMaster.fukui.customFeature =
+    "まくりが強いバンク。地元先行ラインは押し切ることも多い。";
+
+  bankMaster.nara.customFeature =
+    "“魔界バンク”として展開が読みづらい。33でも差し・まくりが強く決まる日も多く、後方のまくりが謎に届くことも。";
+
+  bankMaster.muko.customFeature =
+    "差し優勢。1センターで位置取りが大きく変わる。夏の向かい風時は逃げ残らない。";
+
+  bankMaster.wakayama.customFeature =
+    "海風でバック向かい風→差し届く。ライン3番手も浮上しやすい。";
+
+  bankMaster.kishiwada.customFeature =
+    "近畿ラインの結束が強く差し・3番手浮上が多い。ナイターはまくり強め。";
+
+  // 中国
+  bankMaster.tamano.customFeature =
+    "外伸びが効きやすい。自力の選手が能力通り強い。";
+
+  bankMaster.hiroshima.customFeature =
+    "捲り決まり手が全国的に多い部類。ライン3車構成が強め。";
+
+  bankMaster.hofu.customFeature =
+    "33だが差し・まくりも決まる特殊型。風で展開が荒れやすい。";
+
+  // 四国
+  bankMaster.takamatsu.customFeature =
+    "差し有利でライン3番手の突っ込みも多い。";
+
+  bankMaster.komatsushima.customFeature =
+    "海風で重くなる日が多く逃げ残りが減る。";
+
+  bankMaster.kochi.customFeature =
+    "500で差し・まくり届く“超伸びバンク”。まくり勢が人気以上に来る。";
+
+  bankMaster.matsuyama.customFeature =
+    "バランス型。ナイターはスピード戦になりやすい。";
+
+  // 九州
+  bankMaster.kokura.customFeature =
+    "風弱くスピード決着。V字まくりが決まりやすい独特のバンク。";
+
+  bankMaster.kurume.customFeature =
+    "外伸びが強い。最後の伸びは番手・3番手が有利。";
+
+  bankMaster.takeo.customFeature =
+    "直線短く逃げ・先行有利。番手の抜け出しが目立つ。";
+
+  bankMaster.sasebo.customFeature =
+    "バックの風でまくり難易度が変わる。イン突きの成功率やや高い。";
+
+  bankMaster.beppu.customFeature =
+    "天候差が激しく軽い・重いの差が大きい。自力型が強いときは連対濃厚。";
+
+  bankMaster.kumamoto.customFeature =
+    "直線が長く差し・外伸びが効きやすい。まくりも届く傾向で先行は踏み直し必須。";
+
+  /* ▲ customFeature ここまで */
 
   window.addEventListener("load", () => {
     riders.forEach(r => {
@@ -612,9 +681,6 @@
     if (saved !== null) {
       memo.value = saved;
     }
-
-    // 6番車の初期位置を基準にレールをセット
-    initRail();
   });
 
   function applySize(mode) {
@@ -663,14 +729,6 @@
     return riders.filter(r => r.classList.contains("selected"));
   }
 
-  // 角度差を -π〜π に正規化（分岐点をまたいだときのガクッを防ぐ）
-  function normalizeAngleDiff(diff) {
-    while (diff > Math.PI)  diff -= Math.PI * 2;
-    while (diff < -Math.PI) diff += Math.PI * 2;
-    return diff;
-  }
-
-  // ▼ クリック（グループ変更 or 複数選択）
   track.addEventListener("click", (e) => {
     if (didDrag) {
       didDrag = false;
@@ -694,26 +752,23 @@
     }
   });
 
-  // ★ レール上を動かす用：ドラッグ開始
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
+
     if (!e.touches && e.shiftKey) return;
 
     isDragging = true;
     didDrag = false;
 
-    const rect = track.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    const px0 = clientX - rect.left;
-    const py0 = clientY - rect.top;
-
-    // ポインタの角度を記録
-    dragPointerAngle0 = Math.atan2(py0 - ellipseCenterY, px0 - ellipseCenterX);
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    startX = cx;
+    startY = cy;
 
     let group = [];
     const gid = target.dataset.group;
+
     if (gid) {
       group = riders.filter(r => r.dataset.group === gid);
     } else {
@@ -721,54 +776,44 @@
       group = (sel.length > 0 && sel.includes(target)) ? sel : [target];
     }
 
-    // 各丸の「ポインタに対する角度差」を保存
     dragItems = group.map(el => {
-      const rRect = el.getBoundingClientRect();
-      const cx0 = (rRect.left - rect.left) + rRect.width / 2;
-      const cy0 = (rRect.top  - rect.top)  + rRect.height / 2;
-      const angle0 = Math.atan2(cy0 - ellipseCenterY, cx0 - ellipseCenterX);
+      const cs = getComputedStyle(el);
       return {
         el,
-        angleOffset: angle0 - dragPointerAngle0
+        startLeft: parseFloat(cs.left),
+        startTop: parseFloat(cs.top)
       };
     });
   }
 
-  // ★ レール上を動かす用：ドラッグ中
   function moveDrag(e) {
     if (!isDragging || dragItems.length === 0) return;
 
-    const rect = track.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    const px = clientX - rect.left;
-    const py = clientY - rect.top;
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
 
-    // 生のポインタ角度
-    const rawPointerAngle = Math.atan2(py - ellipseCenterY, px - ellipseCenterX);
+    const dx = cx - startX;
+    const dy = cy - startY;
 
-    // 開始時との角度差を -π〜π に正規化してから感度を掛ける
-    let angleDiff = normalizeAngleDiff(rawPointerAngle - dragPointerAngle0);
-    const scaledDiff = angleDiff * DRAG_SENSITIVITY;
-
-    const pointerAngle = dragPointerAngle0 + scaledDiff;
-
-    if (Math.abs(scaledDiff) > 0.002) {
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
       didDrag = true;
     }
 
+    const rect = track.getBoundingClientRect();
+
     dragItems.forEach(item => {
-      const angle = pointerAngle + item.angleOffset;
+      const el = item.el;
+      const maxX = rect.width - el.offsetWidth;
+      const maxY = rect.height - el.offsetHeight;
 
-      // ★ 6番車基準のレール（全員 same）で位置決定
-      const ex = ellipseCenterX + Math.cos(angle) * ellipseRx * baseRadiusScale;
-      const ey = ellipseCenterY + Math.sin(angle) * ellipseRy * baseRadiusScale;
+      let left = item.startLeft + dx;
+      let top = item.startTop + dy;
 
-      const left = ex - item.el.offsetWidth / 2;
-      const top  = ey - item.el.offsetHeight / 2;
+      left = Math.max(0, Math.min(maxX, left));
+      top = Math.max(0, Math.min(maxY, top));
 
-      item.el.style.left = left + "px";
-      item.el.style.top  = top  + "px";
+      el.style.left = left + "px";
+      el.style.top = top + "px";
     });
 
     e.preventDefault();
@@ -833,6 +878,7 @@
 
     bankFeatureDisplay.textContent = "特徴：" + feature;
 
+    // メモが空なら、自動でバンク説明を入れる（邪魔なら消してOK）
     if (memo && !memo.value.trim()) {
       memo.value =
         `【バンク】${bank.fullName}（${bank.length}m）\n` +
@@ -857,4 +903,11 @@
 
 })();
 </script>
+
+</body>
+</html>
+
+
+
+
 
