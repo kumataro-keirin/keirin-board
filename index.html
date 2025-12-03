@@ -206,19 +206,13 @@ footer {
 }
 
 .ad-item {
-    flex: 1 1 300px;
-    max-width: 300px;
-    text-align: center;
-    border: none !important;
-    outline: none !important;
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 .ad-item img {
-    width: 100%;
-    height: auto;
-    border: none !important;
-    outline: none !important;
-    display: block;
+    width: 108%;        /* 少し拡大して赤枠を外に追い出す */
+    margin-left: -4%;   /* センター調整 */
 }
 
 </style>
@@ -362,4 +356,5 @@ applyTimeBackground();
 
 </body>
 </html>
+
 
