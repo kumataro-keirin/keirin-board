@@ -20,13 +20,14 @@ a {
     text-decoration: none;
 }
 
+/* コンテナ */
 .container {
     max-width: 960px;
     margin: 0 auto;
     padding: 0 16px 40px;
 }
 
-/* HERO */
+/* ヒーローヘッダー */
 .hero {
     position: relative;
     padding: 80px 20px;
@@ -34,6 +35,7 @@ a {
     background-position: center;
     overflow: hidden;
 }
+
 .hero::before {
     content: "";
     position: absolute;
@@ -45,7 +47,11 @@ a {
     );
     pointer-events: none;
 }
-.hero-inner { position: relative; z-index: 1; }
+
+.hero-inner {
+    position: relative;
+    z-index: 1;
+}
 
 .hero h1 {
     font-size: 40px;
@@ -53,8 +59,13 @@ a {
     letter-spacing: 2px;
     font-weight: 900;
 }
-.hero p { font-size: 18px; opacity: 0.9; }
 
+.hero p {
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+/* キャッチコピー */
 .hero-lead {
     font-size: 22px;
     font-weight: 900;
@@ -63,6 +74,7 @@ a {
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0,0,0,0.35);
 }
+
 .hero-lead-sub {
     font-size: 19px;
     font-weight: 800;
@@ -72,12 +84,13 @@ a {
     text-shadow: 0 2px 4px rgba(0,0,0,0.28);
 }
 
+/* スマホ折返し */
 .br-sp { display: none; }
 @media (max-width: 768px) {
     .br-sp { display: inline; }
 }
 
-/* ▼ BUTTONS */
+/* ▼ ボタン共通 */
 .btn {
     display: inline-block;
     width: 180px;
@@ -93,16 +106,27 @@ a {
     text-align: center;
 }
 
-/* 昼テーマ（初期値） */
-.btn-main { background: #ff00aa; border-color: #ff00aa; box-shadow: 0 0 14px rgba(255, 0, 170, 0.65); }
-.btn-sub  { background: #ff9800; border-color: #ffb74d; box-shadow: 0 0 14px rgba(255, 152, 0, 0.60); }
+/* 追随版 */
+.btn-main {
+    background: #ff00aa;
+    border-color: #ff00aa;
+    box-shadow: 0 0 14px rgba(255, 0, 170, 0.65);
+}
 
+/* フリー移動版 */
+.btn-sub {
+    background: #ff9800;
+    border-color: #ffb74d;
+    box-shadow: 0 0 14px rgba(255, 152, 0, 0.6);
+}
+
+/* ホバー */
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
 }
 
-/* 並び */
+/* ボタン2つ横並び */
 .version-buttons {
     margin-top: 30px;
     display: flex;
@@ -111,8 +135,10 @@ a {
     justify-content: center;
 }
 
-/* SECTION */
-.section { padding: 40px 0 8px; }
+/* セクション */
+.section {
+    padding: 40px 0 8px;
+}
 
 .section-title {
     font-size: 20px;
@@ -120,7 +146,7 @@ a {
     letter-spacing: 0.08em;
 }
 
-/* FEATURES */
+/* 機能カード */
 .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -134,10 +160,20 @@ a {
     padding: 16px 18px;
     border: 1px solid rgba(148, 163, 184, 0.35);
 }
-.feature-title { font-size: 14px; margin-bottom: 6px; font-weight: 700; }
-.feature-text { font-size: 13px; color: #d1d5db; line-height: 1.7; }
 
-/* HOW TO */
+.feature-title {
+    font-size: 14px;
+    margin-bottom: 6px;
+    font-weight: 700;
+}
+
+.feature-text {
+    font-size: 13px;
+    color: #d1d5db;
+    line-height: 1.7;
+}
+
+/* 使い方 */
 .steps {
     max-width: 640px;
     margin: 0 auto;
@@ -146,10 +182,11 @@ a {
     color: #e5e7eb;
     line-height: 1.7;
 }
+
 .steps ol { padding-left: 20px; }
 .steps li { margin-bottom: 6px; }
 
-/* FOOTER */
+/* フッター */
 footer {
     border-top: 1px solid rgba(55, 65, 81, 0.8);
     padding: 16px;
@@ -158,109 +195,139 @@ footer {
     margin-top: 24px;
 }
 
-/* AD */
+/* ===================== */
+/*   広告（カード無し）   */
+/* ===================== */
 .ad-wrapper {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 16px;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
     margin: 32px 0 24px;
 }
+
 .ad-item {
-    flex: 1 1 260px;
-    max-width: 320px;
     text-align: center;
-    background: #111;
-    padding: 6px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
+
 .ad-item img {
     width: 100%;
-    border-radius: 4px;
-    border: 4px solid #000 !important;
-    box-sizing: border-box;
+    height: auto;
+    max-width: 336px; /* ★ チャリロト広告に合わせて統一 */
+    display: block;
 }
+
 </style>
 </head>
 
 <body>
 
+<!-- ========================== -->
+<!--      HERO AREA             -->
+<!-- ========================== -->
 <div class="hero" id="hero">
   <div class="hero-inner">
     <h1>KEIRIN BOARD</h1>
 
-    <p class="hero-lead">スマホやPCでサッとライン整理<br class="br-sp">【競輪予想の新スタイル】</p>
-    <p class="hero-lead-sub">最大9車を動かして展開を見える化<br class="br-sp">【直感操作の競輪ボード】</p>
-    <p class="hero-lead-sub">仲間と画面を見ながら情報共有<br class="br-sp">で予想精度も上がるかも!?</p>
+    <p class="hero-lead">
+      スマホやPCでサッとライン整理<br class="br-sp">【競輪予想の新スタイル】
+    </p>
+    <p class="hero-lead-sub">
+      最大9車を動かして展開を見える化<br class="br-sp">【直感操作の競輪ボード】
+    </p>
+    <p class="hero-lead-sub">
+      仲間と画面を見ながら情報共有<br class="br-sp">で予想精度も上がるかも!?
+    </p>
 
     <div class="version-buttons">
       <a class="btn btn-main" href="./board/" target="_blank">▶ 追随版</a>
       <a class="btn btn-sub" href="./free/" target="_blank">▶ フリー移動版</a>
     </div>
+
   </div>
 </div>
 
-<!-- === AD === -->
+<!-- ========================== -->
+<!--        広告エリア          -->
+<!-- ========================== -->
+
 <div class="ad-wrapper">
+
+  <!-- ★ 広告1：チャリロト（残す） -->
   <div class="ad-item">
     <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow">
-      <img src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1">
+      <img src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1"
+           alt="チャリロト" width="336" height="280">
     </a>
   </div>
 
+  <!-- ★ 広告2：指定の A8広告 -->
   <div class="ad-item">
-    <a href="https://h.accesstrade.net/sp/cc?rk=0100k9ph00olo8" rel="nofollow" referrerpolicy="no-referrer-when-downgrade">
-      <img src="https://h.accesstrade.net/sp/rr?rk=0100k9ph00olo8" alt="777タウン.net">
+    <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" rel="nofollow">
+      <img border="0" width="336" height="280" alt=""
+           src="https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1">
     </a>
+    <img border="0" width="1" height="1"
+         src="https://www17.a8.net/0.gif?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" alt="">
   </div>
+
 </div>
 
-<!-- FEATURES -->
+<!-- ========================== -->
+<!--      主な機能              -->
+<!-- ========================== -->
 <section id="features" class="section">
   <h2 class="section-title">主な機能</h2>
 
   <div class="features">
+
     <div class="feature-card">
       <div class="feature-title">◎ 予想メモ整理</div>
-      <p class="feature-text">競輪場の特徴を見ながら…</p>
+      <p class="feature-text">競輪場の特徴を見ながら、展開メモ・軸・相手を整理できます。</p>
     </div>
 
     <div class="feature-card">
       <div class="feature-title">◎ 買い目の書き出し</div>
-      <p class="feature-text">複数の買い目候補を書き出し…</p>
+      <p class="feature-text">買い目を複数ストックでき、後で比較しながら決定できます。</p>
     </div>
 
     <div class="feature-card">
       <div class="feature-title">◎ PC / スマホ両対応</div>
-      <p class="feature-text">ブラウザだけで動く設計。</p>
+      <p class="feature-text">アプリ不要、ブラウザだけで動作します。</p>
     </div>
 
     <div class="feature-card">
-      <div class="feature-title">◎ 印刷・PDF保存も自由</div>
-      <p class="feature-text">メモ保存ができ…</p>
+      <div class="feature-title">◎ 印刷・PDF保存</div>
+      <p class="feature-text">スクショや印刷など自由に保存して活用できます。</p>
     </div>
+
   </div>
 </section>
 
+<!-- ========================== -->
+<!--        使い方              -->
+<!-- ========================== -->
 <section class="section">
   <h2 class="section-title">使い方かんたん</h2>
+
   <div class="steps">
     <ol>
-      <li>追随版 or フリー移動版 を選ぶ</li>
-      <li>競輪場を選ぶ</li>
-      <li>ラインを動かす</li>
-      <li>スクショ・印刷で保存</li>
+      <li>ページ上部から「追随版」または「フリー移動版」を選ぶ。</li>
+      <li>競輪場を選択。</li>
+      <li>ラインを動かして展開を視覚化。</li>
+      <li>印刷・スクショで保存。</li>
     </ol>
   </div>
 </section>
 
+<!-- ========================== -->
+<!--       作者リンク           -->
+<!-- ========================== -->
 <section class="section">
   <h2 class="section-title">作者X（Twitter）</h2>
   <p>
-    <a href="https://x.com/kumatarou_kuma_" target="_blank" style="color:#1da1f2;font-weight:bold;">
+    <a href="https://x.com/kumatarou_kuma_" target="_blank"
+       style="color:#1da1f2; font-weight:bold;">
       @kumatarou_kuma_
     </a>
   </p>
@@ -270,55 +337,29 @@ footer {
   &copy; 2025 KEIRIN BOARD / 個人制作ツールです。
 </footer>
 
-<!-- =============================== -->
-<!--     ★ 背景＆ボタン色切替 JS  -->
-<!-- =============================== -->
+<!-- ========================== -->
+<!--     背景切り替え（昼夜）   -->
+<!-- ========================== -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const hero = document.getElementById('hero');
-  const btnMain = document.querySelector('.btn-main');
-  const btnSub  = document.querySelector('.btn-sub');
+const hero = document.getElementById('hero');
 
-  const BG_DAY = 'url("bg_day.jpg")';
-  const BG_NIGHT = 'url("bg_night.jpg")';
+const BG_DAY = 'url("bg_day.jpg")';
+const BG_NIGHT = 'url("bg_night.jpg")';
 
-  function applyTimeBackground() {
+function applyTimeBackground() {
     const hour = new Date().getHours();
-    const isNight = (hour >= 17 || hour <= 4);
 
-    /* ▼ 背景画像切替 */
-    hero.style.backgroundImage = isNight ? BG_NIGHT : BG_DAY;
+    if (hour >= 17 || hour <= 4) {
+        hero.style.backgroundImage = BG_NIGHT;
+    } else {
+        hero.style.backgroundImage = BG_DAY;
+    }
+
     hero.style.backgroundSize = 'cover';
     hero.style.backgroundPosition = 'center';
+}
 
-    /* ▼ ボタン色連動切替 */
-    if (isNight) {
-      if (btnMain) {
-        btnMain.style.background   = '#d000ff';
-        btnMain.style.borderColor  = '#d000ff';
-        btnMain.style.boxShadow    = '0 0 16px rgba(208, 0, 255, 0.65)';
-      }
-      if (btnSub) {
-        btnSub.style.background    = '#ff6a00';
-        btnSub.style.borderColor   = '#ff6a00';
-        btnSub.style.boxShadow     = '0 0 16px rgba(255,106,0,0.65)';
-      }
-    } else {
-      if (btnMain) {
-        btnMain.style.background   = '#ff00aa';
-        btnMain.style.borderColor  = '#ff00aa';
-        btnMain.style.boxShadow    = '0 0 14px rgba(255, 0, 170, 0.65)';
-      }
-      if (btnSub) {
-        btnSub.style.background    = '#ff9800';
-        btnSub.style.borderColor   = '#ffb74d';
-        btnSub.style.boxShadow     = '0 0 14px rgba(255,152,0,0.60)';
-      }
-    }
-  }
-
-  applyTimeBackground();
-});
+applyTimeBackground();
 </script>
 
 </body>
