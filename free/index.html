@@ -123,16 +123,6 @@
       align-items: center;
     }
 
-    .label {
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: white;
-      -webkit-text-stroke: 2px black;
-      margin: 4px 0;
-      user-select: none;
-    }
-
     .track {
       position: relative;
       width: 1140px;
@@ -175,7 +165,7 @@
     .rider[data-group="2"] { box-shadow: 0 0 0 3px rgba(0,200,0,0.7); }
     .rider[data-group="3"] { box-shadow: 0 0 0 3px rgba(255,140,0,0.7); }
     .rider[data-group="4"] { box-shadow: 0 0 0 3px rgba(160,80,255,0.7); }
-    .rider[data-group="5"] { box-shadow: 0 0 0 3px rgba(255,0,120,0,0.7); }
+    .rider[data-group="5"] { box-shadow: 0 0 0 3px rgba(255,0,120,0.7); }
 
     /* 車番色＋初期位置 */
     .r1 { background:#fff;    color:#000; top:105px; left:570px; }
@@ -268,12 +258,54 @@
       font-size: 12px;
       color: #666;
     }
+
+    /* ▼ ライン簡易入力（横並び） */
+    .line-inputs {
+      width: 100%;
+      max-width: 1200px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .line-inputs-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .line-row-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      align-items: center;
+    }
+    .line-row {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .line-row label {
+      font-size: 12px;
+    }
+    .line-row input {
+      width: 70px;
+      padding: 4px 4px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    .line-row-button {
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
 
   <h1>競輪 予想ボード（9車）</h1>
-  <div class="version-box">ver 1.0.0</div>
+  <div class="version-box">ver 1.1.0（フリー＋ライン簡易入力）</div>
 
   <!-- 作者Xリンク -->
   <div class="author-box">
@@ -365,6 +397,39 @@
   </div>
   <!-- ▲ 競輪場選択＋特徴表示 -->
 
+  <!-- ▼ ライン簡易入力（横並び） -->
+  <div class="line-inputs">
+    <div class="line-inputs-title">
+      ライン簡易入力（例：<code>1.3.5</code> / <code>2,4,7</code> / <code>3 6 9</code>）
+    </div>
+    <div class="line-row-group">
+      <div class="line-row">
+        <label for="line-g1">G1：</label>
+        <input id="line-g1" placeholder="1.3.5">
+      </div>
+      <div class="line-row">
+        <label for="line-g2">G2：</label>
+        <input id="line-g2" placeholder="2.6.9">
+      </div>
+      <div class="line-row">
+        <label for="line-g3">G3：</label>
+        <input id="line-g3" placeholder="4.7">
+      </div>
+      <div class="line-row">
+        <label for="line-g4">G4：</label>
+        <input id="line-g4" placeholder="">
+      </div>
+      <div class="line-row">
+        <label for="line-g5">G5：</label>
+        <input id="line-g5" placeholder="">
+      </div>
+    </div>
+    <div class="line-row-button">
+      <button class="btn" id="applyLinesBtn">ライン反映（G1〜G5に一括セット）</button>
+    </div>
+  </div>
+  <!-- ▲ ライン簡易入力 -->
+
   <div class="controls">
     <button class="btn" id="resetBtn">初期位置に戻す</button>
     <button class="btn" id="clearSelectionBtn">ライン選択解除</button>
@@ -396,33 +461,34 @@
   </div>
 
   <div class="hint">
-    ● G1〜G5 → タップで所属変更<br>
-    ● グループに入った丸はラインとしてまとめて移動<br>
-    ● ドラッグ後の誤タップは自動で無効化（グループは勝手に変わらない）<br>
+    ● G1〜G5 → タップで所属変更／上の入力欄から一括設定も可<br>
+    ● グループに入った丸はラインとしてまとめて移動（フリー移動版）<br>
+    ● 「ライン反映」で各ラインが中央付近に横一列で整列<br>
     ● 買目や予想、気になることをメモとして残せる・保存を押せば閉じても消えない
   </div>
 
   <!-- メモ上広告 -->
   <div class="ads-multi">
     <div class="ad-item">
-  <div class="ad-title">PR：無料会員登録</div>
+      <div class="ad-title">PR：無料会員登録</div>
 
-  <!-- 1行目：A8の本来のリンク -->
-  <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" rel="nofollow">
-    無料会員登録で最大3000円分もらえる
-  </a>
-  <br>
+      <!-- 1行目：A8の本来のリンク -->
+      <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" rel="nofollow">
+        無料会員登録で最大3000円分もらえる
+      </a>
+      <br>
 
-  <!-- 2行目：押したらXに飛ぶ【広告募集中】 -->
-  <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="nofollow" style="font-size:12px;">
-    【広告募集中】
-  </a>
+      <!-- 2行目：押したらXに飛ぶ【広告募集中】 -->
+      <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="nofollow" style="font-size:12px;">
+        【広告募集中】
+      </a>
 
-  <!-- A8の計測用1x1画像（位置はこのままでOK） -->
-  <img border="0" width="1" height="1"
-       src="https://www14.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
-       alt="">
-</div>
+      <!-- A8の計測用1x1画像（位置はこのままでOK） -->
+      <img border="0" width="1" height="1"
+           src="https://www14.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
+           alt="">
+    </div>
+  </div>
 
   <!-- メモ欄 -->
   <div class="memo-wrapper">
@@ -449,6 +515,19 @@
   const clearMemoBtn = document.getElementById("clearMemoBtn");
   const MEMO_KEY = "keirin-board-memo-v1";
 
+  /* ▼ ライン簡易入力DOM */
+  const applyLinesBtn = document.getElementById("applyLinesBtn");
+  const lineInputs = {
+    1: document.getElementById("line-g1"),
+    2: document.getElementById("line-g2"),
+    3: document.getElementById("line-g3"),
+    4: document.getElementById("line-g4"),
+    5: document.getElementById("line-g5"),
+  };
+  // G1〜G5ごとのライン構成（例：{1:[1,3,5],2:[2,6,9],...}）
+  let lineConfig = {1:[],2:[],3:[],4:[],5:[]};
+  /* ▲ ライン簡易入力DOM */
+
   /* ▼ バンク関連DOM */
   const bankSelect        = document.getElementById("bank-select");
   const bankNameDisplay   = document.getElementById("bank-name-display");
@@ -465,7 +544,7 @@
   const BASE_SIZE = 52;
   let currentGroupMode = null;
 
-  /* ▼ 全バンクマスタなど（元のまま） ▼ */
+  /* ▼ 全バンクマスタなど ▼ */
   const bankMaster = {
     // 北日本
     hakodate:  { name: "函館",   fullName: "函館競輪場",     region: "北日本", length: 400 },
@@ -528,8 +607,12 @@
     250: { tag: "250木製ドーム", type: "スプリント特化",    feature: "千葉の屋内木製バンク。周長が短く周回数が多いスプリント志向のレースが中心。" }
   };
 
-  // customFeature（省略せず全部入れてOKだがここでは割愛しても動作に支障なし）
-  // …必要ならここに前の customFeature 群をコピペ…
+  // 車番 → 要素マップ
+  const numToEl = {};
+  riders.forEach(r => {
+    const n = parseInt(r.textContent.trim(), 10);
+    if (!isNaN(n)) numToEl[n] = r;
+  });
 
   window.addEventListener("load", () => {
     riders.forEach(r => {
@@ -583,6 +666,7 @@
     currentGroupMode = null;
     updateGroupButtonStates();
     riders.forEach(r => delete r.dataset.group);
+    lineConfig = {1:[],2:[],3:[],4:[],5:[]};
   });
 
   function selectedRiders() {
@@ -610,6 +694,83 @@
     }
   });
 
+  // ▼ ライン簡易入力：文字列から車番配列に変換
+  function parseLine(str) {
+    if (!str) return [];
+    return str
+      .split(/[^\d]+/)
+      .filter(Boolean)
+      .map(n => parseInt(n,10))
+      .filter(n => !isNaN(n) && numToEl[n]);
+  }
+
+  // 入力欄→data-group & lineConfig へ反映＋位置も「横並びで寄せる」
+  function applyLinesFromInputs() {
+    // いったん全グループ解除
+    riders.forEach(r => delete r.dataset.group);
+    lineConfig = {1:[],2:[],3:[],4:[],5:[]};
+
+    const rect = track.getBoundingClientRect();
+
+    // 各グループの基準位置（トラック中央付近に横一列）
+    const basePos = {
+      1: { x: rect.width / 2, y: rect.height * 0.30 },
+      2: { x: rect.width / 2, y: rect.height * 0.40 },
+      3: { x: rect.width / 2, y: rect.height * 0.50 },
+      4: { x: rect.width / 2, y: rect.height * 0.60 },
+      5: { x: rect.width / 2, y: rect.height * 0.70 }
+    };
+
+    const SPACING = 60; // 並べる間隔（px）
+
+    for (let g = 1; g <= 5; g++) {
+      const input = lineInputs[g];
+      if (!input) continue;
+
+      const arr = parseLine(input.value);
+      lineConfig[g] = arr;
+
+      const pos = basePos[g];
+      if (!pos || arr.length === 0) continue;
+
+      const centerX = pos.x;
+      const centerY = pos.y;
+
+      // 中央から左右に並べる用にオフセット計算
+      const count = arr.length;
+      const offsetStart = -(count - 1) / 2;  // 例：3人なら -1,0,1
+
+      arr.forEach((num, idx) => {
+        const el = numToEl[num];
+        if (!el) return;
+
+        el.dataset.group = String(g);
+
+        const offsetIndex = offsetStart + idx;
+        const targetCenterX = centerX + offsetIndex * SPACING;
+        const targetCenterY = centerY;
+
+        const w = el.offsetWidth  || 52;
+        const h = el.offsetHeight || 52;
+
+        // track内に収まるようにクランプ
+        let left = targetCenterX - w / 2;
+        let top  = targetCenterY - h / 2;
+
+        const maxX = rect.width  - w;
+        const maxY = rect.height - h;
+
+        left = Math.max(0, Math.min(maxX, left));
+        top  = Math.max(0, Math.min(maxY, top));
+
+        el.style.left = left + "px";
+        el.style.top  = top  + "px";
+      });
+    }
+  }
+
+  applyLinesBtn.addEventListener("click", applyLinesFromInputs);
+
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
@@ -625,7 +786,14 @@
     let group = [];
     const gid = target.dataset.group;
     if (gid) {
-      group = riders.filter(r => r.dataset.group === gid);
+      // ライン入力がある場合は lineConfig の順でグループ化
+      const gNum = parseInt(gid, 10);
+      const conf = lineConfig[gNum];
+      if (conf && conf.length > 0) {
+        group = conf.map(n => numToEl[n]).filter(Boolean);
+      } else {
+        group = riders.filter(r => r.dataset.group === gid);
+      }
     } else {
       const sel = selectedRiders();
       group = (sel.length > 0 && sel.includes(target)) ? sel : [target];
@@ -660,7 +828,7 @@
       let top = item.startTop + dy;
 
       left = Math.max(0, Math.min(maxX, left));
-      top = Math.max(0, Math.min(maxY, top));
+      top  = Math.max(0, Math.min(maxY, top));
 
       el.style.left = left + "px";
       el.style.top = top + "px";
