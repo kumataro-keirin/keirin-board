@@ -175,7 +175,7 @@
     .rider[data-group="4"] { box-shadow: 0 0 0 3px rgba(160,80,255,0.7); }
     .rider[data-group="5"] { box-shadow: 0 0 0 3px rgba(255,0,120,0.7); }
 
-    /* 車番色＋初期位置（だいたい今まで通り） */
+    /* 車番色＋初期位置 */
     .r1 { background:#fff;    color:#000; top:105px; left:570px; }
     .r2 { background:#000;    color:#fff; top:150px; left:705px; }
     .r3 { background:#ff4d4d; color:#000; top:225px; left:780px; }
@@ -305,7 +305,7 @@
 <body>
 
   <h1>競輪 予想ボード（9車・追随版）</h1>
-  <div class="version-box">ver 1.1.0（追随＋ライン簡易入力・詰め気味）</div>
+  <div class="version-box">ver 1.2.0（追随＋ライン簡易入力・車間固定）</div>
 
   <!-- 作者Xリンク -->
   <div class="author-box">
@@ -471,7 +471,7 @@
   <div class="hint">
     ● G1〜G5 → タップで所属変更／上の入力欄から一括設定も可<br>
     ● 追随版：グループに入った丸はバンクに沿ってラインごとにスルッと移動<br>
-    ● 「ライン反映」で各ラインがバンク上の位置に“詰め気味”に整列<br>
+    ● 「ライン反映」で各ラインがバンク上の位置に“いい感じの車間”で整列（ドラッグしても車間固定）<br>
     ● 買目や予想、気になることをメモとして残せる・保存を押せば閉じても消えない
   </div>
 
@@ -548,6 +548,9 @@
 
   const BASE_SIZE = 52;
   let currentGroupMode = null;
+
+  // ★ ライン内の角度間隔（詰め具合）共通
+  const ANGLE_SPACING = 0.10; // 広げたかったら 0.10〜0.11 に
 
   // ★ 楕円レール用パラメータ
   let ellipseCenterX = 0;
@@ -764,7 +767,7 @@
       .filter(n => !isNaN(n) && numToEl[n]);
   }
 
-  // ★ ライン簡易入力を反映：バンク上に“詰め気味”で並べる
+  // ★ ライン簡易入力を反映：バンク上に“いい感じの車間”で並べる
   function applyLinesFromInputs() {
     // いったん全グループ解除
     riders.forEach(r => delete r.dataset.group);
@@ -772,18 +775,14 @@
 
     const rect = track.getBoundingClientRect();
 
-    // グループごとの「基準角度」（位置イメージ）
-    // G1〜G5 で少しずつ前後を変える
+    // グループごとの「基準角度」
     const baseAngles = {
-      1: -Math.PI * 0.45, // ちょい上
+      1: -Math.PI * 0.45,
       2: -Math.PI * 0.35,
       3: -Math.PI * 0.25,
       4: -Math.PI * 0.15,
-      5: -Math.PI * 0.05  // ちょい下
+      5: -Math.PI * 0.05
     };
-
-    // ライン内の間隔（ここを小さくして「詰める」）
-    const ANGLE_SPACING = 0.10; // 0.10 → 0.07 にして詰め気味
 
     for (let g = 1; g <= 5; g++) {
       const input = lineInputs[g];
@@ -796,7 +795,7 @@
 
       const baseAngle = baseAngles[g] ?? (-Math.PI * 0.25);
       const count = arr.length;
-      const offsetStart = -(count - 1) / 2; // 3人なら -1,0,1
+      const offsetStart = -(count - 1) / 2;
 
       arr.forEach((num, idx) => {
         const el = numToEl[num];
@@ -830,7 +829,7 @@
 
   applyLinesBtn.addEventListener("click", applyLinesFromInputs);
 
-  // ★ 追随ドラッグ開始
+  // ★ 追随ドラッグ開始（ラインの車間が固定されるように修正）
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
@@ -845,34 +844,51 @@
     const px0 = clientX - rect.left;
     const py0 = clientY - rect.top;
 
+    // ポインタの角度（これを「ラインの中心角」として扱う）
     dragPointerAngle0 = Math.atan2(py0 - ellipseCenterY, px0 - ellipseCenterX);
 
-    let group = [];
+    let groupEls = [];
     const gid = target.dataset.group;
+
     if (gid) {
-      // lineConfig があればその順でグループ化
       const gNum = parseInt(gid, 10);
       const conf = lineConfig[gNum];
-      if (conf && conf.length > 0) {
-        group = conf.map(n => numToEl[n]).filter(Boolean);
-      } else {
-        group = riders.filter(r => r.dataset.group === gid);
-      }
-    } else {
-      const sel = selectedRiders();
-      group = (sel.length > 0 && sel.includes(target)) ? sel : [target];
-    }
 
-    dragItems = group.map(el => {
-      const rRect = el.getBoundingClientRect();
-      const cx0 = (rRect.left - rect.left) + rRect.width / 2;
-      const cy0 = (rRect.top  - rect.top)  + rRect.height / 2;
-      const angle0 = Math.atan2(cy0 - ellipseCenterY, cx0 - ellipseCenterX);
-      return {
-        el,
-        angleOffset: angle0 - dragPointerAngle0
-      };
-    });
+      if (conf && conf.length > 0) {
+        // ライン簡易入力で決めた順番どおり
+        groupEls = conf.map(n => numToEl[n]).filter(Boolean);
+      } else {
+        groupEls = riders.filter(r => r.dataset.group === gid);
+      }
+
+      // ラインの場合 → 車間を固定（ANGLE_SPACING ごとに並べる）
+      const count = groupEls.length;
+      const centerIndex = (count - 1) / 2;
+
+      dragItems = groupEls.map((el, idx) => {
+        const offsetIndex = idx - centerIndex;
+        return {
+          el,
+          angleOffset: offsetIndex * ANGLE_SPACING
+        };
+      });
+
+    } else {
+      // 単独 or Shift選択でまとめて（従来通り）
+      const sel = selectedRiders();
+      groupEls = (sel.length > 0 && sel.includes(target)) ? sel : [target];
+
+      dragItems = groupEls.map(el => {
+        const rRect = el.getBoundingClientRect();
+        const cx0 = (rRect.left - rect.left) + rRect.width / 2;
+        const cy0 = (rRect.top  - rect.top)  + rRect.height / 2;
+        const angle0 = Math.atan2(cy0 - ellipseCenterY, cx0 - ellipseCenterX);
+        return {
+          el,
+          angleOffset: angle0 - dragPointerAngle0
+        };
+      });
+    }
   }
 
   // ★ 追随ドラッグ中
@@ -999,4 +1015,3 @@
 
 </body>
 </html>
-
