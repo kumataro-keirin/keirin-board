@@ -266,7 +266,7 @@
 <body>
 
   <h1>競輪 予想ボード（9車）追随版</h1>
-  <div class="version-box">ver 1.0.0</div>
+  <div class="version-box">ver 1.0.1</div>
 
   <!-- 作者Xリンク -->
   <div class="author-box">
@@ -406,24 +406,25 @@
   <!-- メモ上広告 -->
   <div class="ads-multi">
     <div class="ad-item">
-  <div class="ad-title">PR：無料会員登録</div>
+      <div class="ad-title">PR：無料会員登録</div>
 
-  <!-- 1行目：A8の本来のリンク -->
-  <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" rel="nofollow">
-    無料会員登録で最大3000円分もらえる
-  </a>
-  <br>
+      <!-- 1行目：A8の本来のリンク -->
+      <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" rel="nofollow">
+        無料会員登録で最大3000円分もらえる
+      </a>
+      <br>
 
-  <!-- 2行目：押したらXに飛ぶ【広告募集中】 -->
-  <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="nofollow" style="font-size:12px;">
-    【広告募集中】
-  </a>
+      <!-- 2行目：押したらXに飛ぶ【広告募集中】 -->
+      <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="nofollow" style="font-size:12px;">
+        【広告募集中】
+      </a>
 
-  <!-- A8の計測用1x1画像（位置はこのままでOK） -->
-  <img border="0" width="1" height="1"
-       src="https://www14.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
-       alt="">
-</div>
+      <!-- A8の計測用1x1画像（位置はこのままでOK） -->
+      <img border="0" width="1" height="1"
+           src="https://www14.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
+           alt="">
+    </div>
+  </div>
 
   <!-- メモ欄 -->
   <div class="memo-wrapper">
@@ -695,7 +696,7 @@
     }
   });
 
-  // ★ レール上を動かす用：ドラッグ開始
+  // ★ レール上を動かす用：ドラッグ開始（崩れない隊列バージョン）
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
@@ -716,26 +717,22 @@
     let group = [];
     const gid = target.dataset.group;
     if (gid) {
+      // 同じグループをまとめて移動
       group = riders.filter(r => r.dataset.group === gid);
     } else {
+      // グループなし → Shift選択があればまとめて、なければ単体
       const sel = selectedRiders();
       group = (sel.length > 0 && sel.includes(target)) ? sel : [target];
     }
 
-    // 各丸の「ポインタに対する角度差」を保存
-    dragItems = group.map(el => {
-      const rRect = el.getBoundingClientRect();
-      const cx0 = (rRect.left - rect.left) + rRect.width / 2;
-      const cy0 = (rRect.top  - rect.top)  + rRect.height / 2;
-      const angle0 = Math.atan2(cy0 - ellipseCenterY, cx0 - ellipseCenterX);
-      return {
-        el,
-        angleOffset: angle0 - dragPointerAngle0
-      };
-    });
+    // 並び順は「今の構成の順番」のまま使う（indexで隊列を作る）
+    dragItems = group.map((el, index) => ({
+      el,
+      index
+    }));
   }
 
-  // ★ レール上を動かす用：ドラッグ中
+  // ★ レール上を動かす用：ドラッグ中（重なりにくい隊列バージョン）
   function moveDrag(e) {
     if (!isDragging || dragItems.length === 0) return;
 
@@ -758,12 +755,28 @@
       didDrag = true;
     }
 
-    dragItems.forEach(item => {
-      const angle = pointerAngle + item.angleOffset;
+    // ─────────────────────────
+    // 丸のサイズから「重ならない角度ステップ」を計算
+    // ─────────────────────────
+    const sampleEl = dragItems[0].el;
+    const dotSize = sampleEl.offsetWidth || BASE_SIZE;   // 丸の直径
+    const avgR = baseRadiusScale * ((ellipseRx + ellipseRy) / 2); // 楕円のだいたいの半径
 
-      // ★ 6番車基準のレール（全員 same）で位置決定
-      const ex = ellipseCenterX + Math.cos(angle) * ellipseRx * baseRadiusScale;
-      const ey = ellipseCenterY + Math.sin(angle) * ellipseRy * baseRadiusScale;
+    // arc_length ≒ dotSize * 1.3 になるように angleStep を決める
+    let angleStep = 0.12; // 保険のデフォルト値
+    if (avgR > 0) {
+      angleStep = (dotSize * 1.3) / avgR;
+    }
+
+    dragItems.forEach(item => {
+      // グループ内の index に応じて角度をずらす
+      const angle = pointerAngle + angleStep * item.index;
+
+      // 半径を少しずつ変えて「ナナメ隊列」にする（視認性UP）
+      const radiusScale = baseRadiusScale * (1 + 0.04 * item.index);
+
+      const ex = ellipseCenterX + Math.cos(angle) * ellipseRx * radiusScale;
+      const ey = ellipseCenterY + Math.sin(angle) * ellipseRy * radiusScale;
 
       const left = ex - item.el.offsetWidth / 2;
       const top  = ey - item.el.offsetHeight / 2;
@@ -859,4 +872,5 @@
 })();
 </script>
 
-
+</body>
+</html>
