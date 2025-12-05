@@ -261,12 +261,54 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+
+    /* ▼ ライン簡易入力（横並び） */
+    .line-inputs {
+      width: 100%;
+      max-width: 1200px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .line-inputs-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .line-row-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      align-items: center;
+    }
+    .line-row {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .line-row label {
+      font-size: 12px;
+    }
+    .line-row input {
+      width: 70px;
+      padding: 4px 4px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    .line-row-button {
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
 
   <h1>競輪 予想ボード（9車）追随版</h1>
-  <div class="version-box">ver 1.0.1</div>
+  <div class="version-box">ver 1.1.1（ライン簡易入力 横並び）</div>
 
   <!-- 作者Xリンク -->
   <div class="author-box">
@@ -366,6 +408,39 @@
   </div>
   <!-- ▲ 競輪場選択＋特徴表示 -->
 
+  <!-- ▼ ライン簡易入力（横並び） -->
+  <div class="line-inputs">
+    <div class="line-inputs-title">
+      ライン簡易入力（例：<code>1.3.5</code> / <code>2,4,7</code> / <code>3 6 9</code>）
+    </div>
+    <div class="line-row-group">
+      <div class="line-row">
+        <label for="line-g1">G1：</label>
+        <input id="line-g1" placeholder="1.3.5">
+      </div>
+      <div class="line-row">
+        <label for="line-g2">G2：</label>
+        <input id="line-g2" placeholder="2.6.9">
+      </div>
+      <div class="line-row">
+        <label for="line-g3">G3：</label>
+        <input id="line-g3" placeholder="4.7">
+      </div>
+      <div class="line-row">
+        <label for="line-g4">G4：</label>
+        <input id="line-g4" placeholder="">
+      </div>
+      <div class="line-row">
+        <label for="line-g5">G5：</label>
+        <input id="line-g5" placeholder="">
+      </div>
+    </div>
+    <div class="line-row-button">
+      <button class="btn" id="applyLinesBtn">ライン反映（G1〜G5に一括セット）</button>
+    </div>
+  </div>
+  <!-- ▲ ライン簡易入力 -->
+
   <div class="controls">
     <button class="btn" id="resetBtn">初期位置に戻す</button>
     <button class="btn" id="clearSelectionBtn">ライン選択解除</button>
@@ -397,8 +472,8 @@
   </div>
 
   <div class="hint">
-    ● G1〜G5 → タップで所属変更<br>
-    ● グループに入った丸はラインとしてまとめて移動<br>
+    ● G1〜G5 → タップで所属変更／上の入力欄から一括設定も可<br>
+    ● グループに入った丸はラインとしてまとめて移動（追随）<br>
     ● ドラッグ後の誤タップは自動で無効化（グループは勝手に変わらない）<br>
     ● 買目や予想、気になることをメモとして残せる・保存を押せば閉じても消えない
   </div>
@@ -451,6 +526,19 @@
   const clearMemoBtn = document.getElementById("clearMemoBtn");
   const MEMO_KEY = "keirin-board-memo-v1";
 
+  /* ▼ ライン簡易入力DOM */
+  const applyLinesBtn = document.getElementById("applyLinesBtn");
+  const lineInputs = {
+    1: document.getElementById("line-g1"),
+    2: document.getElementById("line-g2"),
+    3: document.getElementById("line-g3"),
+    4: document.getElementById("line-g4"),
+    5: document.getElementById("line-g5"),
+  };
+  // ライン構成保持（G1〜G5ごとに [1,3,5] みたいな配列）
+  let lineConfig = {1:[],2:[],3:[],4:[],5:[]};
+  /* ▲ ライン簡易入力DOM */
+
   /* ▼ バンク関連DOM */
   const bankSelect        = document.getElementById("bank-select");
   const bankNameDisplay   = document.getElementById("bank-name-display");
@@ -475,6 +563,13 @@
 
   // ★ ドラッグ感度（小さいほどゆっくり動く） 0.2〜0.4 くらいで調整
   const DRAG_SENSITIVITY = 0.8;
+
+  // 車番 → 要素 のマップ（ライン入力→グループ化に使う）
+  const numToEl = {};
+  riders.forEach(r => {
+    const n = parseInt(r.textContent.trim(), 10);
+    if (!isNaN(n)) numToEl[n] = r;
+  });
 
   /* ▼ 全バンクマスタ */
   const bankMaster = {
@@ -577,7 +672,6 @@
     ellipseCenterX = rect.width / 2;
     ellipseCenterY = rect.height / 2;
 
-    // まずは「標準楕円」の大きさをざっくり決める
     const baseRx = rect.width  * 0.40;
     const baseRy = rect.height * 0.43;
 
@@ -597,7 +691,7 @@
     const idealR  = Math.hypot(idealRx, idealRy) || 1;
     const actualR = Math.hypot(dx, dy);
 
-    baseRadiusScale = actualR / idealR; // ← 6番車の距離にピッタリ合うようにスケーリング
+    baseRadiusScale = actualR / idealR;
     ellipseRx = baseRx;
     ellipseRy = baseRy;
   }
@@ -615,7 +709,6 @@
       memo.value = saved;
     }
 
-    // 6番車の初期位置を基準にレールをセット
     initRail();
   });
 
@@ -659,20 +752,19 @@
     currentGroupMode = null;
     updateGroupButtonStates();
     riders.forEach(r => delete r.dataset.group);
+    lineConfig = {1:[],2:[],3:[],4:[],5:[]};
   });
 
   function selectedRiders() {
     return riders.filter(r => r.classList.contains("selected"));
   }
 
-  // 角度差を -π〜π に正規化（分岐点をまたいだときのガクッを防ぐ）
   function normalizeAngleDiff(diff) {
     while (diff > Math.PI)  diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
     return diff;
   }
 
-  // ▼ クリック（グループ変更 or 複数選択）
   track.addEventListener("click", (e) => {
     if (didDrag) {
       didDrag = false;
@@ -696,7 +788,38 @@
     }
   });
 
-  // ★ レール上を動かす用：ドラッグ開始（崩れない隊列バージョン）
+  function parseLine(str) {
+    if (!str) return [];
+    return str
+      .split(/[^\d]+/)
+      .filter(Boolean)
+      .map(n => parseInt(n,10))
+      .filter(n => !isNaN(n) && numToEl[n]);
+  }
+
+  function applyLinesFromInputs() {
+    riders.forEach(r => delete r.dataset.group);
+    lineConfig = {1:[],2:[],3:[],4:[],5:[]};
+
+    const used = new Set();
+
+    for (let g = 1; g <= 5; g++) {
+      const input = lineInputs[g];
+      if (!input) continue;
+      const arr = parseLine(input.value);
+      lineConfig[g] = arr;
+      arr.forEach(num => {
+        const el = numToEl[num];
+        if (el) {
+          el.dataset.group = String(g);
+          used.add(num);
+        }
+      });
+    }
+  }
+
+  applyLinesBtn.addEventListener("click", applyLinesFromInputs);
+
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
@@ -711,28 +834,30 @@
     const px0 = clientX - rect.left;
     const py0 = clientY - rect.top;
 
-    // ポインタの角度を記録
     dragPointerAngle0 = Math.atan2(py0 - ellipseCenterY, px0 - ellipseCenterX);
 
     let group = [];
     const gid = target.dataset.group;
+
     if (gid) {
-      // 同じグループをまとめて移動
-      group = riders.filter(r => r.dataset.group === gid);
+      const gNum = parseInt(gid, 10);
+      const conf = lineConfig[gNum];
+      if (conf && conf.length > 0) {
+        group = conf.map(n => numToEl[n]).filter(Boolean);
+      } else {
+        group = riders.filter(r => r.dataset.group === gid);
+      }
     } else {
-      // グループなし → Shift選択があればまとめて、なければ単体
       const sel = selectedRiders();
       group = (sel.length > 0 && sel.includes(target)) ? sel : [target];
     }
 
-    // 並び順は「今の構成の順番」のまま使う（indexで隊列を作る）
     dragItems = group.map((el, index) => ({
       el,
       index
     }));
   }
 
-  // ★ レール上を動かす用：ドラッグ中（重なりにくい隊列バージョン）
   function moveDrag(e) {
     if (!isDragging || dragItems.length === 0) return;
 
@@ -742,10 +867,8 @@
     const px = clientX - rect.left;
     const py = clientY - rect.top;
 
-    // 生のポインタ角度
     const rawPointerAngle = Math.atan2(py - ellipseCenterY, px - ellipseCenterX);
 
-    // 開始時との角度差を -π〜π に正規化してから感度を掛ける
     let angleDiff = normalizeAngleDiff(rawPointerAngle - dragPointerAngle0);
     const scaledDiff = angleDiff * DRAG_SENSITIVITY;
 
@@ -755,24 +878,17 @@
       didDrag = true;
     }
 
-    // ─────────────────────────
-    // 丸のサイズから「重ならない角度ステップ」を計算
-    // ─────────────────────────
     const sampleEl = dragItems[0].el;
-    const dotSize = sampleEl.offsetWidth || BASE_SIZE;   // 丸の直径
-    const avgR = baseRadiusScale * ((ellipseRx + ellipseRy) / 2); // 楕円のだいたいの半径
+    const dotSize = sampleEl.offsetWidth || BASE_SIZE;
+    const avgR = baseRadiusScale * ((ellipseRx + ellipseRy) / 2);
 
-    // arc_length ≒ dotSize * 1.3 になるように angleStep を決める
-    let angleStep = 0.12; // 保険のデフォルト値
+    let angleStep = 0.12;
     if (avgR > 0) {
       angleStep = (dotSize * 1.3) / avgR;
     }
 
     dragItems.forEach(item => {
-      // グループ内の index に応じて角度をずらす
       const angle = pointerAngle + angleStep * item.index;
-
-      // 半径を少しずつ変えて「ナナメ隊列」にする（視認性UP）
       const radiusScale = baseRadiusScale * (1 + 0.04 * item.index);
 
       const ex = ellipseCenterX + Math.cos(angle) * ellipseRx * radiusScale;
@@ -825,7 +941,6 @@
   resetBtn.addEventListener("click", reset);
   clearSelectionBtn.addEventListener("click", clearSelection);
 
-  /* ▼ バンク選択の表示ロジック（基本＋customFeature 両方出す） */
   function describeBank(bank) {
     const profile = lengthProfiles[bank.length] || {
       tag: "バンク",
@@ -867,7 +982,6 @@
 
     describeBank(bank);
   });
-  /* ▲ バンク選択の表示ロジック */
 
 })();
 </script>
