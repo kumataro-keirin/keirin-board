@@ -25,7 +25,7 @@
     }
 
     /* ============================= */
-    /*    3×3 レイアウト（9スロット）  */
+    /*    3×3 レイアウト（9スロット） */
     /* ============================= */
 
     .slot-container {
@@ -284,6 +284,19 @@
       <div id="currentRiderLabel9" class="current-rider">現在の選手：未選択</div>
       <textarea id="riderMemoTextarea9" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
       <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+  </div>
+
+  <!-- ⚠ キャッシュクリア注意カード -->
+  <div class="backup-card" style="border-left: 4px solid #e53935; margin-top:16px;">
+    <div class="backup-title" style="color:#e53935;">⚠ 重要：キャッシュクリアでデータが消えます</div>
+    <div class="label" style="color:#444;">
+      このメモ帳はブラウザの「ローカル保存（localStorage）」を使っています。<br>
+      <strong style="color:#d32f2f;">ブラウザのキャッシュ削除・サイトデータ削除・プライベートモード</strong> では<br>
+      メモ内容と保存した選手名がすべて消えます。
+    </div>
+    <div class="hint" style="margin-top:6px;">
+      大事なデータは、下の「バックアップ保存（JSON）」から必ず保存しておいてください。
     </div>
   </div>
 
@@ -547,4 +560,3 @@
   </script>
 </body>
 </html>
-
