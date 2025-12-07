@@ -1,1 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>選手メモ帳（3×3・9選手同時表示＋バックアップ付き）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .sub {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    /* ============================= */
+    /*    3×3 レイアウト（9スロット）  */
+    /* ============================= */
+
+    .slot-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* 幅600px以上で2列 */
+    @media (min-width: 600px) {
+      .slot-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    /* 幅900px以上で3列 → 3×3 */
+    @media (min-width: 900px) {
+      .slot-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      min-width: 0;
+    }
+
+    .label {
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .slot-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+    }
+
+    button {
+      padding: 5px 8px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      margin-right: 4px;
+    }
+
+    button.primary {
+      background: #1976d2;
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      padding: 6px;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .current-rider {
+      font-weight: 700;
+      margin-top: 6px;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .hint {
+      font-size: 10px;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    .small {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .backup-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-top: 8px;
+    }
+
+    .backup-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>選手メモ帳（3×3・9選手同時表示）</h1>
+  <div class="sub">
+    各スロットに別々の選手を読み込んで、最大9人を同時に比較できます。<br>
+    メモは自動保存され、<strong>名前は「名前保存」ボタンを押したスロットだけ復元</strong>されます。
+  </div>
+
+  <!-- 9スロット分のメモカード（3×3 レイアウト） -->
+  <div class="slot-container">
+    <!-- スロット1 -->
+    <div class="card">
+      <div class="slot-title">スロット1</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput1" placeholder="例：脇本雄太">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn1" class="primary">読み込み</button>
+        <button id="saveNameBtn1" class="secondary">名前保存</button>
+        <button id="clearNameBtn1" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel1" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea1" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+
+    <!-- スロット2 -->
+    <div class="card">
+      <div class="slot-title">スロット2</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput2" placeholder="例：古性優作">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn2" class="primary">読み込み</button>
+        <button id="saveNameBtn2" class="secondary">名前保存</button>
+        <button id="clearNameBtn2" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel2" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea2" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+
+    <!-- スロット3 -->
+    <div class="card">
+      <div class="slot-title">スロット3</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput3" placeholder="例：松浦悠士">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn3" class="primary">読み込み</button>
+        <button id="saveNameBtn3" class="secondary">名前保存</button>
+        <button id="clearNameBtn3" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel3" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea3" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+
+    <!-- スロット4 -->
+    <div class="card">
+      <div class="slot-title">スロット4</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput4" placeholder="例：平原康多">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn4" class="primary">読み込み</button>
+        <button id="saveNameBtn4" class="secondary">名前保存</button>
+        <button id="clearNameBtn4" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel4" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea4" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+
+    <!-- スロット5 -->
+    <div class="card">
+      <div class="slot-title">スロット5</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput5" placeholder="例：郡司浩平">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn5" class="primary">読み込み</button>
+        <button id="saveNameBtn5" class="secondary">名前保存</button>
+        <button id="clearNameBtn5" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel5" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea5" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+
+    <!-- スロット6 -->
+    <div class="card">
+      <div class="slot-title">スロット6</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput6" placeholder="例：新田祐大">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn6" class="primary">読み込み</button>
+        <button id="saveNameBtn6" class="secondary">名前保存</button>
+        <button id="clearNameBtn6" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel6" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea6" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+
+    <!-- スロット7 -->
+    <div class="card">
+      <div class="slot-title">スロット7</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput7" placeholder="例：小倉竜二">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn7" class="primary">読み込み</button>
+        <button id="saveNameBtn7" class="secondary">名前保存</button>
+        <button id="clearNameBtn7" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel7" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea7" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+
+    <!-- スロット8 -->
+    <div class="card">
+      <div class="slot-title">スロット8</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput8" placeholder="例：山崎賢人">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn8" class="primary">読み込み</button>
+        <button id="saveNameBtn8" class="secondary">名前保存</button>
+        <button id="clearNameBtn8" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel8" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea8" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+
+    <!-- スロット9 -->
+    <div class="card">
+      <div class="slot-title">スロット9</div>
+      <div class="label">選手名を入力して「読み込み」</div>
+      <input type="text" id="riderNameInput9" placeholder="例：その他注目選手">
+      <div style="margin-top:6px;">
+        <button id="loadRiderMemoBtn9" class="primary">読み込み</button>
+        <button id="saveNameBtn9" class="secondary">名前保存</button>
+        <button id="clearNameBtn9" class="secondary">クリア</button>
+      </div>
+      <div id="currentRiderLabel9" class="current-rider">現在の選手：未選択</div>
+      <textarea id="riderMemoTextarea9" placeholder="脚質・直近の動き・相性など自由にメモ"></textarea>
+      <div class="hint">メモは自動保存 / 名前は「名前保存」したときだけこのスロットに紐づきます</div>
+    </div>
+  </div>
+
+  <!-- データ管理（バックアップ） -->
+  <div class="backup-card">
+    <div class="backup-title">データ管理（バックアップ）</div>
+    <div class="label">選手メモ＋スロットに保存した名前を JSON ファイルとして保存・復元できます。</div>
+    <div style="margin-top:6px; margin-bottom:4px;">
+      <button id="backupExportBtn" class="primary">バックアップ保存（JSONダウンロード）</button>
+      <button id="backupImportBtn" class="secondary">バックアップ読み込み（JSONから復元）</button>
+    </div>
+    <div class="hint">
+      ・スマホなら「ファイル」アプリや「ダウンロード」に保存されます。<br>
+      ・読み込み後はページを自動で再読み込みして反映します。
+    </div>
+    <!-- ファイル選択用（非表示） -->
+    <input type="file" id="backupFileInput" accept=".json,application/json" style="display:none;">
+  </div>
+
+  <div class="small" style="margin-top:8px;">
+    ※ブラウザのサイトデータを削除するとメモ・保存した名前も消えるので、重要なら定期的にバックアップを取ってください。
+  </div>
+
+  <script>
+    const RIDER_MEMO_PREFIX = "riderMemo_";
+    const SLOT_COUNT        = 9;
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function getStorageKey(name) {
+      return RIDER_MEMO_PREFIX + name;
+    }
+
+    // 各スロットのセットアップ
+    function setupSlot(slotNo) {
+      const nameInput = $("riderNameInput" + slotNo);
+      const loadBtn   = $("loadRiderMemoBtn" + slotNo);
+      const saveBtn   = $("saveNameBtn" + slotNo);
+      const clearBtn  = $("clearNameBtn" + slotNo);
+      const label     = $("currentRiderLabel" + slotNo);
+      const textarea  = $("riderMemoTextarea" + slotNo);
+
+      const slotNameKey = "riderSlot" + slotNo + "_name"; // このスロットに紐づく「保存した名前」
+
+      let currentName = "";
+      let currentKey  = "";
+      let saveTimer   = null;
+
+      // 指定した名前のメモを読み込む（名前はまだ保存しない）
+      function loadMemoFor(name) {
+        const trimmed = (name || "").trim();
+        if (!trimmed) return;
+        currentName = trimmed;
+        currentKey  = getStorageKey(trimmed);
+
+        nameInput.value = trimmed;
+        label.textContent = "現在の選手：" + trimmed;
+
+        const saved = localStorage.getItem(currentKey);
+        textarea.value = saved !== null ? saved : "";
+      }
+
+      // メモの自動保存（名前は保存しない）
+      function scheduleSave() {
+        if (!currentKey) return;
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          localStorage.setItem(currentKey, textarea.value);
+        }, 300);
+      }
+
+      // 「読み込み」ボタン：その名前のメモを閲覧するだけ（名前は記憶しない）
+      loadBtn.addEventListener("click", () => {
+        loadMemoFor(nameInput.value);
+      });
+
+      // 「名前保存」ボタン：このスロットに名前を紐づけ（次回起動時に復元）
+      saveBtn.addEventListener("click", () => {
+        let name = nameInput.value.trim();
+        if (!name) {
+          alert("先に選手名を入力してください。");
+          return;
+        }
+        // currentKey を合わせておく
+        loadMemoFor(name);
+        // このスロット用の名前として保存
+        localStorage.setItem(slotNameKey, name);
+        alert("このスロットに「" + name + "」を保存しました。");
+      });
+
+      // 「クリア」ボタン：表示・スロット名だけ消す（メモ本体は消さない）
+      clearBtn.addEventListener("click", () => {
+        nameInput.value = "";
+        currentName = "";
+        currentKey = "";
+        label.textContent = "現在の選手：未選択";
+        textarea.value = "";
+        localStorage.removeItem(slotNameKey); // このスロットの「保存名」を忘れる
+      });
+
+      textarea.addEventListener("input", scheduleSave);
+
+      // URLパラメータから nameX / name を取得（ロードのみ。名前保存はしない）
+      const params = new URLSearchParams(location.search);
+      let paramName = params.get("name" + slotNo);
+      if (!paramName && slotNo === 1) {
+        // 互換用: ?name=〇〇 はスロット1に入れる
+        paramName = params.get("name");
+      }
+
+      // 優先順位：URLパラメータ > スロットに保存済みの名前
+      const savedSlotName = localStorage.getItem(slotNameKey);
+
+      if (paramName) {
+        loadMemoFor(paramName);
+      } else if (savedSlotName) {
+        loadMemoFor(savedSlotName);
+      }
+
+      // 予想ボード側から連動させたいとき用フック（任意）
+      window["loadMemoIntoSlot" + slotNo] = loadMemoFor;
+    }
+
+    // バックアップ保存（JSONエクスポート）
+    function exportBackup() {
+      // memos: riderMemo_○○ 全部
+      const memos = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(RIDER_MEMO_PREFIX)) {
+          const name = key.substring(RIDER_MEMO_PREFIX.length);
+          memos[name] = localStorage.getItem(key) || "";
+        }
+      }
+
+      // slots: riderSlotX_name
+      const slots = {};
+      for (let slot = 1; slot <= SLOT_COUNT; slot++) {
+        const slotNameKey = "riderSlot" + slot + "_name";
+        const name = localStorage.getItem(slotNameKey);
+        if (name) {
+          slots[slot] = name;
+        }
+      }
+
+      const backup = {
+        version: 1,
+        createdAt: new Date().toISOString(),
+        memos: memos,
+        slots: slots
+      };
+
+      const json = JSON.stringify(backup, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      const fileName = `keirin_memo_backup_${y}-${m}-${d}.json`;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // バックアップ読み込み（JSONインポート）
+    function importBackup(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target.result;
+          const data = JSON.parse(text);
+
+          if (!data || typeof data !== "object" || !data.memos) {
+            alert("バックアップファイルの形式が違います。");
+            return;
+          }
+
+          // 既存のメモとスロット名だけを一旦削除（他のlocalStorageは触らない）
+          const keysToDelete = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!key) continue;
+            if (key.startsWith(RIDER_MEMO_PREFIX)) {
+              keysToDelete.push(key);
+            } else if (/^riderSlot\d+_name$/.test(key)) {
+              keysToDelete.push(key);
+            }
+          }
+          keysToDelete.forEach(k => localStorage.removeItem(k));
+
+          // memos を復元
+          const memos = data.memos || {};
+          Object.keys(memos).forEach((name) => {
+            const key = getStorageKey(name);
+            localStorage.setItem(key, memos[name] || "");
+          });
+
+          // slots を復元
+          const slots = data.slots || {};
+          Object.keys(slots).forEach((slotStr) => {
+            const slot = parseInt(slotStr, 10);
+            if (!Number.isNaN(slot) && slot >= 1 && slot <= SLOT_COUNT) {
+              const slotNameKey = "riderSlot" + slot + "_name";
+              localStorage.setItem(slotNameKey, slots[slotStr]);
+            }
+          });
+
+          alert("バックアップから復元しました。ページを再読み込みします。");
+          location.reload();
+        } catch (err) {
+          console.error(err);
+          alert("バックアップファイルの読み込み中にエラーが発生しました。");
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // 9スロット初期化
+      for (let i = 1; i <= SLOT_COUNT; i++) {
+        setupSlot(i);
+      }
+
+      // バックアップボタン
+      const exportBtn = $("backupExportBtn");
+      const importBtn = $("backupImportBtn");
+      const fileInput = $("backupFileInput");
+
+      exportBtn.addEventListener("click", () => {
+        if (!confirm("現在の選手メモとスロットに保存している名前を、JSONファイルとして保存します。よろしいですか？")) {
+          return;
+        }
+        exportBackup();
+      });
+
+      importBtn.addEventListener("click", () => {
+        if (!confirm("バックアップから復元すると、現在の選手メモとスロット名は上書きされます。よろしいですか？")) {
+          return;
+        }
+        fileInput.value = ""; // 同じファイルを連続選択できるように
+        fileInput.click();
+      });
+
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (file) {
+          importBackup(file);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
 
