@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>競輪予想ボード（9車・追随版＋ライン簡易入力）</title>
+  <title>競輪予想ボード（9車・追随版＋ライン簡易入力＋選手メモ連携）</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -365,7 +365,7 @@
 <body>
 
   <h1>競輪 予想ボード（9車・追随版）</h1>
-  <div class="version-box">ver 1.2.0（追随＋ライン簡易入力・車間固定）</div>
+  <div class="version-box">ver 1.3.0（追随＋ライン簡易入力・選手メモ連携）</div>
 
   <!-- 作者Xリンク -->
   <div class="author-box">
@@ -568,22 +568,22 @@
     </div>
   </div>
 
-  <!-- ▼ 選手メモ（1人分・選手名のみ） -->
+  <!-- ▼ 選手メモ（1人分・選手名のみ／9人メモ帳と共有） -->
   <div class="rider-memo-box">
     <div class="rider-memo-title">
       選手メモ（1人分）
       <span class="rider-memo-sub">
-        選手名ごとのメモを端末に保存し、必要なとき上のメモ欄へ貼り付けできます
+        9人メモ帳と同じ「riderMemo_名前」で共有。選手名を入れて読込／保存できます
       </span>
     </div>
 
     <div class="rider-memo-row">
       <label for="riderMemoName">選手名：</label>
-      <input id="riderMemoName" placeholder="例：佐藤 太郎">
+      <input id="riderMemoName" placeholder="例：脇本雄太">
       <button class="btn" id="loadRiderMemoBtn">読込</button>
     </div>
 
-    <textarea id="riderMemoBody" placeholder="この選手の脚質・クセ・過去の印象など自由にメモできます。"></textarea>
+    <textarea id="riderMemoBody" placeholder="この選手の脚質・クセ・過去の印象など自由にメモできます（9人メモ帳と共通）。"></textarea>
 
     <div class="rider-memo-buttons">
       <button class="btn" id="saveRiderMemoBtn">保存</button>
@@ -607,11 +607,6 @@
   const saveMemoBtn = document.getElementById("saveMemoBtn");
   const clearMemoBtn = document.getElementById("clearMemoBtn");
   const MEMO_KEY = "keirin-board-memo-v1";
-
-  // ▼ 選手メモ辞書用
-  const RIDER_MEMO_KEY = "keirin-rider-memo-dict-v1";
-  let riderMemoDict = {};
-  // ▲ 選手メモ辞書用
 
   /* ▼ 選手メモ欄 DOM */
   const riderMemoNameInput       = document.getElementById("riderMemoName");
@@ -662,24 +657,25 @@
   // ドラッグ感度
   const DRAG_SENSITIVITY = 0.8;
 
-  /* ▼ 選手メモ辞書のロード・セーブ */
-  function loadRiderMemoDict() {
-    try {
-      const raw = localStorage.getItem(RIDER_MEMO_KEY);
-      riderMemoDict = raw ? JSON.parse(raw) : {};
-    } catch (e) {
-      riderMemoDict = {};
-    }
-  }
+  /* ▼ 9人メモ帳と同じ形式で使うためのヘルパー */
+  const RIDER_MEMO_PREFIX = "riderMemo_";
 
-  function saveRiderMemoDict() {
-    try {
-      localStorage.setItem(RIDER_MEMO_KEY, JSON.stringify(riderMemoDict));
-    } catch (e) {
-      console.warn("選手メモの保存に失敗しました", e);
-    }
+  function getRiderMemo(name) {
+    const trimmed = (name || "").trim();
+    if (!trimmed) return "";
+    return localStorage.getItem(RIDER_MEMO_PREFIX + trimmed) || "";
   }
-  /* ▲ 選手メモ辞書のロード・セーブ */
+  function setRiderMemo(name, text) {
+    const trimmed = (name || "").trim();
+    if (!trimmed) return;
+    localStorage.setItem(RIDER_MEMO_PREFIX + trimmed, text || "");
+  }
+  function removeRiderMemo(name) {
+    const trimmed = (name || "").trim();
+    if (!trimmed) return;
+    localStorage.removeItem(RIDER_MEMO_PREFIX + trimmed);
+  }
+  /* ▲ 9人メモ帳と同じ形式 */
 
   /* ▼ 全バンクマスタ */
   const bankMaster = {
@@ -793,9 +789,6 @@
     if (saved !== null) {
       memo.value = saved;
     }
-
-    // 選手メモ辞書読み込み
-    loadRiderMemoDict();
 
     initRail();
   });
@@ -1076,23 +1069,24 @@
     localStorage.removeItem(MEMO_KEY);
   });
 
-  // ▼ 選手メモ：読込
+  // ▼ 選手メモ：読込（9人メモ帳と共通）
   loadRiderMemoBtn.addEventListener("click", () => {
     const name = riderMemoNameInput.value.trim();
     if (!name) {
       alert("選手名を入力してください。");
       return;
     }
-    const item = riderMemoDict[name];
-    if (!item) {
+
+    const text = getRiderMemo(name);
+    if (!text) {
       alert("この選手名のメモは保存されていません。");
       riderMemoBodyTextarea.value = "";
       return;
     }
-    riderMemoBodyTextarea.value = item.memo || "";
+    riderMemoBodyTextarea.value = text;
   });
 
-  // ▼ 選手メモ：保存
+  // ▼ 選手メモ：保存（9人メモ帳と同じキーに上書き）
   saveRiderMemoBtn.addEventListener("click", () => {
     const name = riderMemoNameInput.value.trim();
     if (!name) {
@@ -1105,12 +1099,9 @@
         return;
       }
     }
-    riderMemoDict[name] = {
-      memo: body,
-      updated: new Date().toISOString()
-    };
-    saveRiderMemoDict();
-    alert("選手メモを保存しました。");
+
+    setRiderMemo(name, body);
+    alert("選手メモを保存しました。（9人メモ帳と共有）");
   });
 
   // ▼ 選手メモ：上のメモ欄へ貼り付け
@@ -1138,15 +1129,18 @@
       alert("削除する選手名を入力してください。");
       return;
     }
-    if (!riderMemoDict[name]) {
+
+    const existing = getRiderMemo(name);
+    if (!existing) {
       alert("この選手名のメモは登録されていません。");
       return;
     }
+
     if (!confirm(`「${name}」のメモを削除しますか？`)) {
       return;
     }
-    delete riderMemoDict[name];
-    saveRiderMemoDict();
+
+    removeRiderMemo(name);
     riderMemoBodyTextarea.value = "";
     alert("削除しました。");
   });
