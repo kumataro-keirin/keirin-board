@@ -300,6 +300,66 @@
     .line-row-button {
       margin-top: 6px;
     }
+
+    /* ▼ 選手メモ欄（1人分・選手名のみ） */
+    .rider-memo-box {
+      width: 100%;
+      max-width: 1200px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    .rider-memo-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .rider-memo-sub {
+      font-size: 11px;
+      color: #777;
+    }
+    .rider-memo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .rider-memo-row label {
+      font-size: 12px;
+    }
+    .rider-memo-row input {
+      font-size: 12px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      min-width: 180px;
+    }
+    #riderMemoBody {
+      width: 100%;
+      min-height: 70px;
+      padding: 6px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 12px;
+      resize: vertical;
+    }
+    .rider-memo-buttons {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    /* ▲ 選手メモ欄（1人分・選手名のみ） */
   </style>
 </head>
 <body>
@@ -508,6 +568,31 @@
     </div>
   </div>
 
+  <!-- ▼ 選手メモ（1人分・選手名のみ） -->
+  <div class="rider-memo-box">
+    <div class="rider-memo-title">
+      選手メモ（1人分）
+      <span class="rider-memo-sub">
+        選手名ごとのメモを端末に保存し、必要なとき上のメモ欄へ貼り付けできます
+      </span>
+    </div>
+
+    <div class="rider-memo-row">
+      <label for="riderMemoName">選手名：</label>
+      <input id="riderMemoName" placeholder="例：佐藤 太郎">
+      <button class="btn" id="loadRiderMemoBtn">読込</button>
+    </div>
+
+    <textarea id="riderMemoBody" placeholder="この選手の脚質・クセ・過去の印象など自由にメモできます。"></textarea>
+
+    <div class="rider-memo-buttons">
+      <button class="btn" id="saveRiderMemoBtn">保存</button>
+      <button class="btn" id="appendRiderMemoToMainBtn">↑ 上のメモ欄へ貼り付け</button>
+      <button class="btn" id="deleteRiderMemoBtn">削除</button>
+    </div>
+  </div>
+  <!-- ▲ 選手メモ（1人分・選手名のみ） -->
+
 <script>
 (function () {
   const track = document.getElementById("track");
@@ -522,6 +607,20 @@
   const saveMemoBtn = document.getElementById("saveMemoBtn");
   const clearMemoBtn = document.getElementById("clearMemoBtn");
   const MEMO_KEY = "keirin-board-memo-v1";
+
+  // ▼ 選手メモ辞書用
+  const RIDER_MEMO_KEY = "keirin-rider-memo-dict-v1";
+  let riderMemoDict = {};
+  // ▲ 選手メモ辞書用
+
+  /* ▼ 選手メモ欄 DOM */
+  const riderMemoNameInput       = document.getElementById("riderMemoName");
+  const riderMemoBodyTextarea    = document.getElementById("riderMemoBody");
+  const loadRiderMemoBtn         = document.getElementById("loadRiderMemoBtn");
+  const saveRiderMemoBtn         = document.getElementById("saveRiderMemoBtn");
+  const appendRiderMemoToMainBtn = document.getElementById("appendRiderMemoToMainBtn");
+  const deleteRiderMemoBtn       = document.getElementById("deleteRiderMemoBtn");
+  /* ▲ 選手メモ欄 DOM */
 
   /* ▼ ライン簡易入力DOM */
   const applyLinesBtn = document.getElementById("applyLinesBtn");
@@ -550,7 +649,7 @@
   let currentGroupMode = null;
 
   // ★ ライン内の角度間隔（詰め具合）共通
-  const ANGLE_SPACING = 0.12; // 広げたかったら 0.10〜0.11 に
+  const ANGLE_SPACING = 0.12;
 
   // ★ 楕円レール用パラメータ
   let ellipseCenterX = 0;
@@ -562,6 +661,25 @@
 
   // ドラッグ感度
   const DRAG_SENSITIVITY = 0.8;
+
+  /* ▼ 選手メモ辞書のロード・セーブ */
+  function loadRiderMemoDict() {
+    try {
+      const raw = localStorage.getItem(RIDER_MEMO_KEY);
+      riderMemoDict = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      riderMemoDict = {};
+    }
+  }
+
+  function saveRiderMemoDict() {
+    try {
+      localStorage.setItem(RIDER_MEMO_KEY, JSON.stringify(riderMemoDict));
+    } catch (e) {
+      console.warn("選手メモの保存に失敗しました", e);
+    }
+  }
+  /* ▲ 選手メモ辞書のロード・セーブ */
 
   /* ▼ 全バンクマスタ */
   const bankMaster = {
@@ -675,6 +793,9 @@
     if (saved !== null) {
       memo.value = saved;
     }
+
+    // 選手メモ辞書読み込み
+    loadRiderMemoDict();
 
     initRail();
   });
@@ -829,7 +950,7 @@
 
   applyLinesBtn.addEventListener("click", applyLinesFromInputs);
 
-  // ★ 追随ドラッグ開始（ラインの車間が固定されるように修正）
+  // ★ 追随ドラッグ開始
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
@@ -855,13 +976,12 @@
       const conf = lineConfig[gNum];
 
       if (conf && conf.length > 0) {
-        // ライン簡易入力で決めた順番どおり
         groupEls = conf.map(n => numToEl[n]).filter(Boolean);
       } else {
         groupEls = riders.filter(r => r.dataset.group === gid);
       }
 
-      // ラインの場合 → 車間を固定（ANGLE_SPACING ごとに並べる）
+      // ラインの場合 → 車間を固定
       const count = groupEls.length;
       const centerIndex = (count - 1) / 2;
 
@@ -874,7 +994,7 @@
       });
 
     } else {
-      // 単独 or Shift選択でまとめて（従来通り）
+      // 単独 or Shift選択
       const sel = selectedRiders();
       groupEls = (sel.length > 0 && sel.includes(target)) ? sel : [target];
 
@@ -956,6 +1076,81 @@
     localStorage.removeItem(MEMO_KEY);
   });
 
+  // ▼ 選手メモ：読込
+  loadRiderMemoBtn.addEventListener("click", () => {
+    const name = riderMemoNameInput.value.trim();
+    if (!name) {
+      alert("選手名を入力してください。");
+      return;
+    }
+    const item = riderMemoDict[name];
+    if (!item) {
+      alert("この選手名のメモは保存されていません。");
+      riderMemoBodyTextarea.value = "";
+      return;
+    }
+    riderMemoBodyTextarea.value = item.memo || "";
+  });
+
+  // ▼ 選手メモ：保存
+  saveRiderMemoBtn.addEventListener("click", () => {
+    const name = riderMemoNameInput.value.trim();
+    if (!name) {
+      alert("選手名を入力してください。");
+      return;
+    }
+    const body = riderMemoBodyTextarea.value.trim();
+    if (!body) {
+      if (!confirm("メモが空ですが、この選手のメモを空で保存しますか？")) {
+        return;
+      }
+    }
+    riderMemoDict[name] = {
+      memo: body,
+      updated: new Date().toISOString()
+    };
+    saveRiderMemoDict();
+    alert("選手メモを保存しました。");
+  });
+
+  // ▼ 選手メモ：上のメモ欄へ貼り付け
+  appendRiderMemoToMainBtn.addEventListener("click", () => {
+    const name = riderMemoNameInput.value.trim();
+    const body = riderMemoBodyTextarea.value.trim();
+
+    if (!name || !body) {
+      alert("選手名とメモを入力・読込してください。");
+      return;
+    }
+
+    const text = `【${name}】\n${body}\n`;
+
+    if (memo.value && !memo.value.endsWith("\n")) {
+      memo.value += "\n";
+    }
+    memo.value += text;
+  });
+
+  // ▼ 選手メモ：削除
+  deleteRiderMemoBtn.addEventListener("click", () => {
+    const name = riderMemoNameInput.value.trim();
+    if (!name) {
+      alert("削除する選手名を入力してください。");
+      return;
+    }
+    if (!riderMemoDict[name]) {
+      alert("この選手名のメモは登録されていません。");
+      return;
+    }
+    if (!confirm(`「${name}」のメモを削除しますか？`)) {
+      return;
+    }
+    delete riderMemoDict[name];
+    saveRiderMemoDict();
+    riderMemoBodyTextarea.value = "";
+    alert("削除しました。");
+  });
+
   track.addEventListener("mousedown", startDrag);
   window.addEventListener("mousemove", moveDrag);
   window.addEventListener("mouseup", endDrag);
@@ -1015,5 +1210,3 @@
 
 </body>
 </html>
-
-
