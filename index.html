@@ -5,6 +5,23 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>KEIRIN BOARD – 配布ページ</title>
 
+<!-- ========================== -->
+<!--        OGP / SNS            -->
+<!-- ========================== -->
+<meta property="og:title" content="KEIRIN BOARD｜競輪予想を可視化するボード" />
+<meta property="og:description" content="スマホ・PC対応。ラインを動かして展開を見える化。追随版／フリー移動版／選手メモを公開中。" />
+<meta property="og:type" content="website" />
+<!-- ★ここは実URLに差し替え -->
+<meta property="og:url" content="https://example.com/" />
+<meta property="og:image" content="https://example.com/ogp.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- ========================== -->
+<!--     Background preload      -->
+<!-- ========================== -->
+<link rel="preload" as="image" href="bg_day.jpg">
+<link rel="preload" as="image" href="bg_night.jpg">
+
 <style>
 body {
     margin: 0;
@@ -60,6 +77,8 @@ a {
     margin: 0 0 20px;
     letter-spacing: 2px;
     font-weight: 900;
+    /* ★可読性強化 */
+    text-shadow: 0 4px 10px rgba(0,0,0,0.6);
 }
 
 .hero-lead {
@@ -91,6 +110,19 @@ a {
     text-decoration: none;
     border: 1px solid transparent;
     transition: 0.25s ease;
+    line-height: 1.15;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn small {
+    display: block;
+    font-size: 11px;
+    opacity: 0.88;
+    margin-top: 6px;
+    font-weight: 700;
 }
 
 .btn-main {
@@ -99,10 +131,18 @@ a {
     box-shadow: 0 0 14px rgba(255,0,170,0.65);
 }
 
+.btn-main:hover {
+    box-shadow: 0 0 18px rgba(255,0,170,0.80);
+}
+
 .btn-sub {
     background: #ff9800;
     border-color: #ffb74d;
     box-shadow: 0 0 14px rgba(255,152,0,0.60);
+}
+
+.btn-sub:hover {
+    box-shadow: 0 0 18px rgba(255,152,0,0.78);
 }
 
 /* ★ エメラルドグリーンボタン（選手メモ用） */
@@ -114,7 +154,6 @@ a {
 }
 
 .btn-emerald:hover {
-    transform: translateY(-2px);
     box-shadow: 0 0 18px rgba(16,185,129,0.75);
 }
 
@@ -124,6 +163,15 @@ a {
     display: flex;
     gap: 12px;
     justify-content: center;
+}
+
+/* スマホ時に縦並び */
+@media (max-width: 520px) {
+  .version-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  .btn { width: 240px; }
 }
 
 /* ========================== */
@@ -221,14 +269,22 @@ footer {
 
     <!-- ▼ 1段目（追随版 + フリー移動版） -->
     <div class="version-buttons">
-      <a class="btn btn-main" href="./board/" target="_blank">▶ 追随版</a>
-      <a class="btn btn-sub" href="./free/" target="_blank">▶ フリー移動版</a>
+      <a class="btn btn-main" href="./board/" target="_blank" rel="noopener">
+        ▶ 追随版
+        <small>ライン連動で配置が整う</small>
+      </a>
+
+      <a class="btn btn-sub" href="./free/" target="_blank" rel="noopener">
+        ▶ フリー移動版
+        <small>完全自由配置で検討できる</small>
+      </a>
     </div>
 
     <!-- ▼ 2段目（中央に「選手メモ」：エメラルド + 📒） -->
     <div class="version-buttons" style="margin-top:16px;">
-      <a class="btn btn-emerald" href="./memo/" target="_blank" style="width:220px;">
+      <a class="btn btn-emerald" href="./memo/" target="_blank" rel="noopener" style="width:260px;">
         📒 ▶ 選手メモ
+        <small>気になる選手の特徴を保存</small>
       </a>
     </div>
 
@@ -243,17 +299,21 @@ footer {
 
   <!-- ★ 広告1：チャリロト -->
   <div class="ad-item">
-    <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow">
-      <img src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1" alt="チャリロト">
+    <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow noopener" target="_blank">
+      <img loading="lazy"
+           src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1"
+           alt="チャリロト">
     </a>
   </div>
 
   <!-- ★ 広告2：A8広告 -->
   <div class="ad-item">
-    <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" rel="nofollow">
-      <img src="https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1" alt="">
+    <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" rel="nofollow noopener" target="_blank">
+      <img loading="lazy"
+           src="https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1"
+           alt="">
     </a>
-    <img border="0" width="1" height="1"
+    <img loading="lazy" border="0" width="1" height="1"
          src="https://www17.a8.net/0.gif?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" alt="">
   </div>
 
@@ -300,7 +360,7 @@ footer {
 
   <div class="steps">
     <ol>
-      <li>追随版 or フリー移動版 を選ぶ</li>
+      <li>「追随版」or「フリー移動版」or「選手メモ」を選ぶ</li>
       <li>競輪場を選択</li>
       <li>ラインを動かして展開を視覚化</li>
       <li>スクショ or 印刷で保存</li>
@@ -315,7 +375,7 @@ footer {
 <section class="section">
   <h2 class="section-title">作者X（Twitter）</h2>
   <p>
-    <a href="https://x.com/kumatarou_kuma_" target="_blank"
+    <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="noopener"
        style="color:#1da1f2;font-weight:bold;">
       @kumatarou_kuma_
     </a>
@@ -336,18 +396,14 @@ const BG_DAY = 'url("bg_day.jpg")';
 const BG_NIGHT = 'url("bg_night.jpg")';
 
 function applyTimeBackground() {
-    const hour = new Date().getHours();
-
-    if (hour >= 17 || hour <= 4) {
-        hero.style.backgroundImage = BG_NIGHT;
-    } else {
-        hero.style.backgroundImage = BG_DAY;
-    }
-
-    hero.style.backgroundSize = 'cover';
-    hero.style.backgroundPosition = 'center';
+  const hour = new Date().getHours();
+  const isNight = (hour >= 17 || hour < 5);
+  hero.style.backgroundImage = isNight ? BG_NIGHT : BG_DAY;
+  hero.style.backgroundSize = 'cover';
+  hero.style.backgroundPosition = 'center';
 }
 
+// 初回適用
 applyTimeBackground();
 </script>
 
