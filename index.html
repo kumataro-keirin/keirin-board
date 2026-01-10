@@ -5,20 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>KEIRIN BOARD – 配布ページ</title>
 
-<!-- ========================== -->
-<!--        OGP / SNS            -->
-<!-- ========================== -->
+<!-- OGP（必要ならURL差し替え） -->
 <meta property="og:title" content="KEIRIN BOARD｜競輪予想を可視化するボード" />
 <meta property="og:description" content="スマホ・PC対応。ラインを動かして展開を見える化。追随版／フリー移動版／選手メモを公開中。" />
 <meta property="og:type" content="website" />
-<!-- ★ここは実URLに差し替え -->
 <meta property="og:url" content="https://example.com/" />
 <meta property="og:image" content="https://example.com/ogp.png" />
 <meta name="twitter:card" content="summary_large_image" />
 
-<!-- ========================== -->
-<!--     Background preload      -->
-<!-- ========================== -->
+<!-- 背景画像プリロード -->
 <link rel="preload" as="image" href="bg_day.jpg">
 <link rel="preload" as="image" href="bg_night.jpg">
 
@@ -32,10 +27,7 @@ body {
     text-align: center;
 }
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
+a { color: inherit; text-decoration: none; }
 
 /* コンテナ */
 .container {
@@ -67,17 +59,13 @@ a {
     pointer-events: none;
 }
 
-.hero-inner {
-    position: relative;
-    z-index: 1;
-}
+.hero-inner { position: relative; z-index: 1; }
 
 .hero h1 {
     font-size: 40px;
     margin: 0 0 20px;
     letter-spacing: 2px;
     font-weight: 900;
-    /* ★可読性強化 */
     text-shadow: 0 4px 10px rgba(0,0,0,0.6);
 }
 
@@ -112,17 +100,14 @@ a {
     transition: 0.25s ease;
     line-height: 1.15;
 }
+.btn:hover { transform: translateY(-2px); }
 
-.btn:hover {
-    transform: translateY(-2px);
-}
-
-.btn small {
-    display: block;
-    font-size: 11px;
-    opacity: 0.88;
-    margin-top: 6px;
-    font-weight: 700;
+.btn small{
+    display:block;
+    font-size:11px;
+    opacity:0.88;
+    margin-top:6px;
+    font-weight:700;
 }
 
 .btn-main {
@@ -130,32 +115,23 @@ a {
     border-color: #ff00aa;
     box-shadow: 0 0 14px rgba(255,0,170,0.65);
 }
-
-.btn-main:hover {
-    box-shadow: 0 0 18px rgba(255,0,170,0.80);
-}
+.btn-main:hover { box-shadow: 0 0 18px rgba(255,0,170,0.80); }
 
 .btn-sub {
     background: #ff9800;
     border-color: #ffb74d;
     box-shadow: 0 0 14px rgba(255,152,0,0.60);
 }
+.btn-sub:hover { box-shadow: 0 0 18px rgba(255,152,0,0.78); }
 
-.btn-sub:hover {
-    box-shadow: 0 0 18px rgba(255,152,0,0.78);
-}
-
-/* ★ エメラルドグリーンボタン（選手メモ用） */
+/* エメラルド */
 .btn-emerald {
     background: #10B981;
     border-color: #34D399;
     box-shadow: 0 0 14px rgba(16,185,129,0.55);
     color: #fff;
 }
-
-.btn-emerald:hover {
-    box-shadow: 0 0 18px rgba(16,185,129,0.75);
-}
+.btn-emerald:hover { box-shadow: 0 0 18px rgba(16,185,129,0.75); }
 
 /* ボタンの行 */
 .version-buttons {
@@ -164,51 +140,51 @@ a {
     gap: 12px;
     justify-content: center;
 }
-
-/* スマホ時に縦並び */
 @media (max-width: 520px) {
-  .version-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
+  .version-buttons { flex-direction: column; align-items: center; }
   .btn { width: 240px; }
 }
 
 /* ========================== */
-/*        広告（横並び）      */
+/*        広告（ランダム）     */
 /* ========================== */
-.ad-wrapper {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin: 24px 0 0 !important;
+.ad-wrapper{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:20px;
+  margin:24px 0 0 !important;
 }
 
-.ad-item img {
-    width: 100%;
-    max-width: 336px;
-    height: auto;
-    display: block;
+.ad-box{
+  width:336px;
+  height:280px;
+  border-radius:12px;
+  overflow:hidden;
+  background:rgba(0,0,0,.25);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.ad-box img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+@media (max-width:600px){
+  .ad-box{ width:100%; max-width:336px; }
 }
 
 /* ========================== */
 /*        主な機能            */
 /* ========================== */
+#features.section { padding-top: 0 !important; margin-top: 0 !important; }
 
-#features.section {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-}
-
-.section {
-    padding: 40px 0 8px;
-}
-
-.section-title {
-    font-size: 20px;
-    margin-bottom: 16px;
-}
+.section { padding: 40px 0 8px; }
+.section-title { font-size: 20px; margin-bottom: 16px; }
 
 .features {
     display: grid;
@@ -223,7 +199,6 @@ a {
     padding: 16px 18px;
     border: 1px solid rgba(148,163,184,0.35);
 }
-
 .feature-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
 .feature-text  { font-size: 13px; color: #d1d5db; line-height: 1.7; }
 
@@ -237,7 +212,6 @@ a {
     font-size: 13px;
     color: #e5e7eb;
 }
-
 .steps ol { padding-left: 20px; }
 .steps li { margin-bottom: 6px; }
 
@@ -267,67 +241,38 @@ footer {
     <p class="hero-lead-sub">最大9車を動かして展開を見える化<br class="br-sp">【直感操作の競輪ボード】</p>
     <p class="hero-lead-sub">仲間と画面を見ながら情報共有<br class="br-sp">で予想精度も上がるかも!?</p>
 
-    <!-- ▼ 1段目（追随版 + フリー移動版） -->
     <div class="version-buttons">
       <a class="btn btn-main" href="./board/" target="_blank" rel="noopener">
         ▶ 追随版
         <small>ライン連動で配置が整う</small>
       </a>
-
       <a class="btn btn-sub" href="./free/" target="_blank" rel="noopener">
         ▶ フリー移動版
         <small>完全自由配置で検討できる</small>
       </a>
     </div>
 
-    <!-- ▼ 2段目（中央に「選手メモ」：エメラルド + 📒） -->
     <div class="version-buttons" style="margin-top:16px;">
       <a class="btn btn-emerald" href="./memo/" target="_blank" rel="noopener" style="width:260px;">
         📒 ▶ 選手メモ
         <small>気になる選手の特徴を保存</small>
       </a>
     </div>
-
   </div>
 </div>
 
 <!-- ========================== -->
-<!--      広告（横並び）       -->
+<!--      広告（ここが変更点） -->
 <!-- ========================== -->
-
-<div class="ad-wrapper">
-
-  <!-- ★ 広告1：チャリロト -->
-  <div class="ad-item">
-    <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT" rel="nofollow noopener" target="_blank">
-      <img loading="lazy"
-           src="https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1"
-           alt="チャリロト">
-    </a>
-  </div>
-
-  <!-- ★ 広告2：A8広告 -->
-  <div class="ad-item">
-    <a href="https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" rel="nofollow noopener" target="_blank">
-      <img loading="lazy"
-           src="https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1"
-           alt="">
-    </a>
-    <img loading="lazy" border="0" width="1" height="1"
-         src="https://www17.a8.net/0.gif?a8mat=45K5P6+B5A6IA+3RK+2TSHAP" alt="">
-  </div>
-
-</div>
+<div class="ad-wrapper" id="ad-area"></div>
 
 <!-- ========================== -->
 <!--        主な機能            -->
 <!-- ========================== -->
-
 <section id="features" class="section">
   <h2 class="section-title">主な機能</h2>
 
   <div class="features">
-
     <div class="feature-card">
       <div class="feature-title">◎ 予想メモ整理</div>
       <p class="feature-text">競輪場の特徴を見ながら展開をメモできます。</p>
@@ -347,14 +292,12 @@ footer {
       <div class="feature-title">◎ PDF/印刷対応</div>
       <p class="feature-text">保存・印刷して予想帳として活用できます。</p>
     </div>
-
   </div>
 </section>
 
 <!-- ========================== -->
 <!--         使い方             -->
 <!-- ========================== -->
-
 <section class="section">
   <h2 class="section-title">使い方かんたん</h2>
 
@@ -371,7 +314,6 @@ footer {
 <!-- ========================== -->
 <!--         作者               -->
 <!-- ========================== -->
-
 <section class="section">
   <h2 class="section-title">作者X（Twitter）</h2>
   <p>
@@ -387,11 +329,11 @@ footer {
 </footer>
 
 <!-- ========================== -->
-<!--     昼夜背景切替JS         -->
+<!--   昼夜背景切替 + 広告抽選 -->
 <!-- ========================== -->
 <script>
+/* ===== 昼夜背景 ===== */
 const hero = document.getElementById('hero');
-
 const BG_DAY = 'url("bg_day.jpg")';
 const BG_NIGHT = 'url("bg_night.jpg")';
 
@@ -402,9 +344,61 @@ function applyTimeBackground() {
   hero.style.backgroundSize = 'cover';
   hero.style.backgroundPosition = 'center';
 }
-
-// 初回適用
 applyTimeBackground();
+
+/* ===== 広告：5個からランダム2個 ===== */
+const ads = [
+  // 既存①（チャリロト）
+  {
+    link:"https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+644DT",
+    img:"https://www20.a8.net/svt/bgt?aid=251130272710&wid=001&eno=01&mid=s00000022682001027000&mc=1",
+    alt:"チャリロト"
+  },
+  // 既存②
+  {
+    link:"https://px.a8.net/svt/ejp?a8mat=45K5P6+B5A6IA+3RK+2TSHAP",
+    img:"https://www25.a8.net/svt/bgt?aid=251203290674&wid=001&eno=01&mid=s00000000488017097000&mc=1",
+    alt:"A8広告"
+  },
+  // 追加①
+  {
+    link:"https://px.a8.net/svt/ejp?a8mat=45KI4P+ATYY0I+5IRA+5YZ75",
+    img:"https://www23.a8.net/svt/bgt?aid=251219401655&wid=001&eno=01&mid=s00000025759001003000&mc=1",
+    alt:"A8広告 300x250"
+  },
+  // 追加②
+  {
+    link:"https://px.a8.net/svt/ejp?a8mat=4AV2KH+3R5F3M+51FE+BYDTT",
+    img:"https://www20.a8.net/svt/bgt?aid=260110529227&wid=001&eno=01&mid=s00000023513002008000&mc=1",
+    alt:"A8広告 300x250"
+  },
+  // 追加③
+  {
+    link:"https://px.a8.net/svt/ejp?a8mat=4AV2KH+3VBGC2+5A3M+5ZMCH",
+    img:"https://www23.a8.net/svt/bgt?aid=260110529234&wid=001&eno=01&mid=s00000024637001006000&mc=1",
+    alt:"A8広告 300x250"
+  }
+];
+
+// 必ず2個
+const SHOW_COUNT = 2;
+
+// 抽選（重複なし）
+const selectedAds = [...ads].sort(() => 0.5 - Math.random()).slice(0, SHOW_COUNT);
+
+// 描画
+const adArea = document.getElementById("ad-area");
+adArea.innerHTML = "";
+selectedAds.forEach(ad => {
+  const box = document.createElement("div");
+  box.className = "ad-box";
+  box.innerHTML = `
+    <a href="${ad.link}" target="_blank" rel="nofollow noopener">
+      <img loading="lazy" src="${ad.img}" alt="${ad.alt}">
+    </a>
+  `;
+  adArea.appendChild(box);
+});
 </script>
 
 </body>
