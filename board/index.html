@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>競輪予想ボード（9車・追随版＋ライン簡易入力＋出走チェック＋選手メモ）</title>
+  <title>競輪予想ボード（追随＋ライン簡易＋出走チェック＋選手メモ1人）</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -20,7 +20,6 @@
       font-weight: 900;
     }
 
-    /* ★ バージョン表記用 ★ */
     .version-box {
       margin-top: 2px;
       margin-bottom: 10px;
@@ -28,7 +27,6 @@
       color: #666;
     }
 
-    /* 作者リンク表示 */
     .author-box {
       margin-bottom: 15px;
       padding: 6px 12px;
@@ -163,19 +161,16 @@
     }
     .rider:active { cursor: grabbing; }
 
-    /* Shift選択 */
     .rider.selected {
       box-shadow: 0 0 0 3px rgba(255,0,0,0.6);
     }
 
-    /* グループ枠色 */
     .rider[data-group="1"] { box-shadow: 0 0 0 3px rgba(0,120,255,0.7); }
     .rider[data-group="2"] { box-shadow: 0 0 0 3px rgba(0,200,0,0.7); }
     .rider[data-group="3"] { box-shadow: 0 0 0 3px rgba(255,140,0,0.7); }
     .rider[data-group="4"] { box-shadow: 0 0 0 3px rgba(160,80,255,0.7); }
     .rider[data-group="5"] { box-shadow: 0 0 0 3px rgba(255,0,120,0.7); }
 
-    /* 車番色＋初期位置 */
     .r1 { background:#fff;    color:#000; top:105px; left:570px; }
     .r2 { background:#000;    color:#fff; top:150px; left:705px; }
     .r3 { background:#ff4d4d; color:#000; top:225px; left:780px; }
@@ -195,71 +190,7 @@
       max-width: 1200px;
     }
 
-    /* メモ欄 */
-    .memo-wrapper {
-      margin-top: 16px;
-      width: 100%;
-      max-width: 1200px;
-    }
-    .memo-title {
-      font-size: 14px;
-      margin-bottom: 4px;
-      font-weight: 600;
-    }
-    #memo {
-      width: 100%;
-      min-height: 120px;
-      padding: 8px;
-      font-size: 13px;
-      box-sizing: border-box;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      resize: vertical;
-    }
-    .memo-buttons {
-      margin-top: 4px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    /* メモ上広告（複数OK） */
-    .ads-multi {
-      margin-top: 12px;
-      margin-bottom: 8px;
-      width: 100%;
-      max-width: 1200px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      font-size: 13px;
-    }
-    .ad-item {
-      flex: 1 1 260px;
-      min-width: 220px;
-      min-height: 80px;
-      background: #fff;
-      border-radius: 8px;
-      padding: 8px 10px;
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
-    .ad-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #888;
-      margin-bottom: 4px;
-    }
-    .ad-item a {
-      color: #0066cc;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .ad-item a:hover {
-      text-decoration: underline;
-    }
-
-    /* ▼ ライン簡易入力（横並び） */
+    /* ▼ 入力ボックス共通 */
     .line-inputs {
       width: 100%;
       max-width: 1200px;
@@ -301,7 +232,7 @@
       margin-top: 6px;
     }
 
-    /* ▼ 出走車番チェック（見た目） */
+    /* ▼ 出走車番チェックの見た目 */
     #rider-checks-row label{
       display: inline-flex;
       align-items: center;
@@ -310,6 +241,70 @@
       border-radius: 6px;
       border: 1px solid #ddd;
       background: #fafafa;
+    }
+
+    /* ▼ 広告 */
+    .ads-multi {
+      margin-top: 12px;
+      margin-bottom: 8px;
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .ad-item {
+      flex: 1 1 260px;
+      min-width: 220px;
+      min-height: 80px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    .ad-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    .ad-item a {
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .ad-item a:hover {
+      text-decoration: underline;
+    }
+
+    /* ▼ メモ欄 */
+    .memo-wrapper {
+      margin-top: 16px;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .memo-title {
+      font-size: 14px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    #memo {
+      width: 100%;
+      min-height: 120px;
+      padding: 8px;
+      font-size: 13px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+    .memo-buttons {
+      margin-top: 4px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     /* ▼ 選手メモ（1人分）スクショ版 */
@@ -379,10 +374,9 @@
 </head>
 <body>
 
-  <h1>競輪 予想ボード（9車・追随版）</h1>
-  <div class="version-box">ver 1.3.0（追随＋ライン簡易入力＋出走車番チェック＋選手メモ1人分）</div>
+  <h1>競輪 予想ボード（追随版）</h1>
+  <div class="version-box">ver 1.3.1（出走チェック＋選手メモ読込互換）</div>
 
-  <!-- 作者Xリンク -->
   <div class="author-box">
     🎉 作者X（Twitter）：
     <a href="https://x.com/kumatarou_kuma_" target="_blank">@kumatarou_kuma_</a>
@@ -394,14 +388,12 @@
     <select id="bank-select">
       <option value="">選択してください</option>
 
-      <!-- 北日本 -->
       <optgroup label="北日本">
         <option value="hakodate">函館</option>
         <option value="aomori">青森</option>
         <option value="iwakidaira">いわき平</option>
       </optgroup>
 
-      <!-- 関東 -->
       <optgroup label="関東">
         <option value="yahiko">弥彦</option>
         <option value="maebashi">前橋</option>
@@ -413,7 +405,6 @@
         <option value="tachikawa">立川</option>
       </optgroup>
 
-      <!-- 南関東 -->
       <optgroup label="南関東">
         <option value="matsudo">松戸</option>
         <option value="chiba">千葉（250）</option>
@@ -424,7 +415,6 @@
         <option value="shizuoka">静岡</option>
       </optgroup>
 
-      <!-- 中部 -->
       <optgroup label="中部">
         <option value="nagoya">名古屋</option>
         <option value="gifu">岐阜</option>
@@ -435,7 +425,6 @@
         <option value="yokkaichi">四日市</option>
       </optgroup>
 
-      <!-- 近畿 -->
       <optgroup label="近畿">
         <option value="fukui">福井</option>
         <option value="nara">奈良</option>
@@ -444,14 +433,12 @@
         <option value="kishiwada">岸和田</option>
       </optgroup>
 
-      <!-- 中国 -->
       <optgroup label="中国">
         <option value="tamano">玉野</option>
         <option value="hiroshima">広島</option>
         <option value="hofu">防府</option>
       </optgroup>
 
-      <!-- 四国 -->
       <optgroup label="四国">
         <option value="takamatsu">高松</option>
         <option value="komatsushima">小松島</option>
@@ -459,7 +446,6 @@
         <option value="matsuyama">松山</option>
       </optgroup>
 
-      <!-- 九州 -->
       <optgroup label="九州">
         <option value="kokura">小倉</option>
         <option value="kurume">久留米</option>
@@ -480,7 +466,7 @@
   </div>
   <!-- ▲ 競輪場選択＋特徴表示 -->
 
-  <!-- ▼ 出走車番チェック（初期：全部ON） -->
+  <!-- ▼ 出走車番チェック -->
   <div class="line-inputs" id="rider-checks">
     <div class="line-inputs-title">出走車番（チェックを外すと丸を非表示）</div>
     <div class="line-row-group" id="rider-checks-row"></div>
@@ -493,38 +479,22 @@
     </div>
   </div>
 
-  <!-- ▼ ライン簡易入力（横並び） -->
+  <!-- ▼ ライン簡易入力 -->
   <div class="line-inputs">
     <div class="line-inputs-title">
       ライン簡易入力（例：<code>1.3.5</code> / <code>2,4,7</code> / <code>3 6 9</code>）
     </div>
     <div class="line-row-group">
-      <div class="line-row">
-        <label for="line-g1">G1：</label>
-        <input id="line-g1" placeholder="1.3.5">
-      </div>
-      <div class="line-row">
-        <label for="line-g2">G2：</label>
-        <input id="line-g2" placeholder="2.6.9">
-      </div>
-      <div class="line-row">
-        <label for="line-g3">G3：</label>
-        <input id="line-g3" placeholder="4.7">
-      </div>
-      <div class="line-row">
-        <label for="line-g4">G4：</label>
-        <input id="line-g4" placeholder="">
-      </div>
-      <div class="line-row">
-        <label for="line-g5">G5：</label>
-        <input id="line-g5" placeholder="">
-      </div>
+      <div class="line-row"><label for="line-g1">G1：</label><input id="line-g1" placeholder="1.3.5"></div>
+      <div class="line-row"><label for="line-g2">G2：</label><input id="line-g2" placeholder="2.6.9"></div>
+      <div class="line-row"><label for="line-g3">G3：</label><input id="line-g3" placeholder="4.7"></div>
+      <div class="line-row"><label for="line-g4">G4：</label><input id="line-g4" placeholder=""></div>
+      <div class="line-row"><label for="line-g5">G5：</label><input id="line-g5" placeholder=""></div>
     </div>
     <div class="line-row-button">
       <button class="btn" id="applyLinesBtn">ライン反映（追随ラインを一括セット）</button>
     </div>
   </div>
-  <!-- ▲ ライン簡易入力 -->
 
   <div class="controls">
     <button class="btn" id="resetBtn">初期位置に戻す</button>
@@ -586,7 +556,7 @@
     </div>
   </div>
 
-  <!-- メモ欄（機能は変更しない） -->
+  <!-- メモ -->
   <div class="memo-wrapper">
     <div class="memo-title">📝 メモ（この端末だけに保存されます）</div>
     <textarea id="memo" placeholder="ライン構成、展開予想、コメントなど自由にメモできます。"></textarea>
@@ -596,7 +566,7 @@
     </div>
   </div>
 
-  <!-- 選手メモ（1人分）スクショ版 -->
+  <!-- 選手メモ（1人分） -->
   <div class="rider-memo-one">
     <div class="rider-memo-one-head">
       <div class="rider-memo-one-title">選手メモ（1人分）</div>
@@ -646,7 +616,6 @@
     5: document.getElementById("line-g5"),
   };
   let lineConfig = {1:[],2:[],3:[],4:[],5:[]};
-  /* ▲ ライン簡易入力DOM */
 
   /* ▼ 出走車番チェックDOM */
   const riderChecksRow = document.getElementById("rider-checks-row");
@@ -655,10 +624,7 @@
   const preset7 = document.getElementById("preset7");
   const preset8 = document.getElementById("preset8");
   const preset9 = document.getElementById("preset9");
-
-  // 初期：全部ON
   let enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
-  /* ▲ 出走車番チェックDOM */
 
   /* ▼ 選手メモ（1人分）DOM */
   const rmName  = document.getElementById("rm-name");
@@ -667,15 +633,13 @@
   const rmSave  = document.getElementById("rm-save");
   const rmPaste = document.getElementById("rm-paste");
   const rmDelete= document.getElementById("rm-delete");
-  const RIDER_MEMO_KEY = "riderMemo"; // スクショに合わせる
-  /* ▲ 選手メモ（1人分）DOM */
+  const RIDER_MEMO_KEY = "riderMemo";
 
   /* ▼ バンク関連DOM */
   const bankSelect        = document.getElementById("bank-select");
   const bankNameDisplay   = document.getElementById("bank-name-display");
   const bankTypeDisplay   = document.getElementById("bank-type-display");
   const bankFeatureDisplay= document.getElementById("bank-feature-display");
-  /* ▲ バンク関連DOM */
 
   let isDragging = false;
   let dragItems = [];
@@ -684,10 +648,8 @@
   const BASE_SIZE = 52;
   let currentGroupMode = null;
 
-  // ★ ライン内の角度間隔（詰め具合）共通
-  const ANGLE_SPACING = 0.13; // 広げたかったら 0.10〜0.11 に
+  const ANGLE_SPACING = 0.12;
 
-  // ★ 楕円レール用パラメータ
   let ellipseCenterX = 0;
   let ellipseCenterY = 0;
   let ellipseRx = 0;
@@ -695,16 +657,13 @@
   let baseRadiusScale = 1;
   let dragPointerAngle0 = 0;
 
-  // ドラッグ感度
   const DRAG_SENSITIVITY = 0.8;
 
-  /* ▼ 全バンクマスタ */
   const bankMaster = {
-    // 北日本
     hakodate:  { name: "函館",   fullName: "函館競輪場",     region: "北日本", length: 400 },
     aomori:    { name: "青森",   fullName: "青森競輪場",     region: "北日本", length: 400 },
     iwakidaira:{ name: "いわき平", fullName: "いわき平競輪場", region: "北日本", length: 400 },
-    // 関東
+
     yahiko:    { name: "弥彦",   fullName: "弥彦競輪場",     region: "関東",   length: 400 },
     maebashi:  { name: "前橋",   fullName: "前橋競輪場",     region: "関東",   length: 335 },
     toride:    { name: "取手",   fullName: "取手競輪場",     region: "関東",   length: 400 },
@@ -713,7 +672,7 @@
     seibuen:   { name: "西武園", fullName: "西武園競輪場",   region: "関東",   length: 400 },
     keio:      { name: "京王閣", fullName: "京王閣競輪場",   region: "関東",   length: 400 },
     tachikawa: { name: "立川",   fullName: "立川競輪場",     region: "関東",   length: 400 },
-    // 南関東
+
     matsudo:   { name: "松戸",   fullName: "松戸競輪場",     region: "南関東", length: 333 },
     chiba:     { name: "千葉",   fullName: "千葉競輪場（PIST6）", region: "南関東", length: 250 },
     kawasaki:  { name: "川崎",   fullName: "川崎競輪場",     region: "南関東", length: 400 },
@@ -721,7 +680,7 @@
     odawara:   { name: "小田原", fullName: "小田原競輪場",   region: "南関東", length: 333 },
     ito:       { name: "伊東",   fullName: "伊東温泉競輪場", region: "南関東", length: 333 },
     shizuoka:  { name: "静岡",   fullName: "静岡競輪場",     region: "南関東", length: 400 },
-    // 中部
+
     nagoya:    { name: "名古屋", fullName: "名古屋競輪場",   region: "中部",   length: 400 },
     gifu:      { name: "岐阜",   fullName: "岐阜競輪場",     region: "中部",   length: 400 },
     ogaki:     { name: "大垣",   fullName: "大垣競輪場",     region: "中部",   length: 400 },
@@ -729,22 +688,22 @@
     toyama:    { name: "富山",   fullName: "富山競輪場",     region: "中部",   length: 333 },
     matsusaka: { name: "松阪",   fullName: "松阪競輪場",     region: "中部",   length: 400 },
     yokkaichi: { name: "四日市", fullName: "四日市競輪場",   region: "中部",   length: 400 },
-    // 近畿
+
     fukui:     { name: "福井",   fullName: "福井競輪場",     region: "近畿",   length: 400 },
     nara:      { name: "奈良",   fullName: "奈良競輪場",     region: "近畿",   length: 333 },
     muko:      { name: "向日町", fullName: "向日町競輪場",   region: "近畿",   length: 400 },
     wakayama:  { name: "和歌山", fullName: "和歌山競輪場",   region: "近畿",   length: 400 },
     kishiwada: { name: "岸和田", fullName: "岸和田競輪場",   region: "近畿",   length: 400 },
-    // 中国
+
     tamano:    { name: "玉野",   fullName: "玉野競輪場",     region: "中国",   length: 400 },
     hiroshima: { name: "広島",   fullName: "広島競輪場",     region: "中国",   length: 400 },
     hofu:      { name: "防府",   fullName: "防府競輪場",     region: "中国",   length: 333 },
-    // 四国
+
     takamatsu:    { name: "高松",   fullName: "高松競輪場",     region: "四国",   length: 400 },
     komatsushima: { name: "小松島", fullName: "小松島競輪場",   region: "四国",   length: 400 },
     kochi:        { name: "高知",   fullName: "高知競輪場",     region: "四国",   length: 500 },
     matsuyama:    { name: "松山",   fullName: "松山競輪場",     region: "四国",   length: 400 },
-    // 九州
+
     kokura:   { name: "小倉",   fullName: "小倉競輪場",     region: "九州",   length: 400 },
     kurume:   { name: "久留米", fullName: "久留米競輪場",   region: "九州",   length: 400 },
     takeo:    { name: "武雄",   fullName: "武雄競輪場",     region: "九州",   length: 400 },
@@ -761,14 +720,12 @@
     250: { tag: "250木製ドーム", type: "スプリント特化",    feature: "千葉の屋内木製バンク。周長が短く周回数が多いスプリント志向のレースが中心。" }
   };
 
-  // 車番 → 要素
   const numToEl = {};
   riders.forEach(r => {
     const n = parseInt(r.textContent.trim(), 10);
     if (!isNaN(n)) numToEl[n] = r;
   });
 
-  // ★ 6番車を基準に「楕円レール」を初期化
   function initRail() {
     const rect = track.getBoundingClientRect();
     ellipseCenterX = rect.width / 2;
@@ -798,7 +755,56 @@
     ellipseRy = baseRy;
   }
 
-  /* ▼ 出走チェック UI */
+  function applySize(mode) {
+    let scale;
+    if (mode === "small") scale = 0.80;
+    else if (mode === "large") scale = 1.25;
+    else scale = 1.0;
+
+    const newSize = BASE_SIZE * scale;
+    riders.forEach(r => {
+      r.style.width = newSize + "px";
+      r.style.height = newSize + "px";
+      r.style.fontSize = (newSize * 0.5) + "px";
+    });
+
+    sizeButtons.forEach(b => b.classList.remove("btn-size-active"));
+    const active = sizeButtons.find(b => b.dataset.size === mode);
+    if (active) active.classList.add("btn-size-active");
+  }
+  sizeButtons.forEach(btn => btn.addEventListener("click", () => applySize(btn.dataset.size)));
+
+  function updateGroupButtonStates() {
+    groupButtons.forEach(btn => {
+      btn.classList.toggle("btn-group-active", btn.dataset.group === currentGroupMode);
+    });
+  }
+  groupButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const g = btn.dataset.group;
+      currentGroupMode = (currentGroupMode === g ? null : g);
+      updateGroupButtonStates();
+    });
+  });
+
+  clearGroupsBtn.addEventListener("click", () => {
+    currentGroupMode = null;
+    updateGroupButtonStates();
+    riders.forEach(r => delete r.dataset.group);
+    lineConfig = {1:[],2:[],3:[],4:[],5:[]};
+  });
+
+  function selectedRiders() {
+    return riders.filter(r => r.classList.contains("selected"));
+  }
+
+  function normalizeAngleDiff(diff) {
+    while (diff > Math.PI)  diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    return diff;
+  }
+
+  /* ▼ 出走チェック */
   function renderRiderChecks() {
     riderChecksRow.innerHTML = "";
     for (let n = 1; n <= 9; n++) {
@@ -814,7 +820,6 @@
         else enabledNums.delete(num);
 
         applyEnabledNums();
-        // ラインにも反映させたいので、必要なら自動整列
         applyLinesFromInputs();
       });
 
@@ -867,82 +872,9 @@
   preset7.addEventListener("click", () => setEnabledRange(7));
   preset8.addEventListener("click", () => setEnabledRange(8));
   preset9.addEventListener("click", () => setEnabledRange(9));
-  /* ▲ 出走チェック UI */
+  /* ▲ 出走チェック */
 
-  window.addEventListener("load", () => {
-    riders.forEach(r => {
-      const cs = getComputedStyle(r);
-      r.dataset.initLeft = cs.left;
-      r.dataset.initTop = cs.top;
-    });
-    applySize("small");
-
-    const saved = localStorage.getItem(MEMO_KEY);
-    if (saved !== null) {
-      memo.value = saved;
-    }
-
-    renderRiderChecks();
-    applyEnabledNums();
-
-    initRail();
-  });
-
-  function applySize(mode) {
-    let scale;
-    if (mode === "small") scale = 0.80;
-    else if (mode === "large") scale = 1.25;
-    else scale = 1.0;
-
-    const newSize = BASE_SIZE * scale;
-    riders.forEach(r => {
-      r.style.width = newSize + "px";
-      r.style.height = newSize + "px";
-      r.style.fontSize = (newSize * 0.5) + "px";
-    });
-
-    sizeButtons.forEach(b => b.classList.remove("btn-size-active"));
-    const active = sizeButtons.find(b => b.dataset.size === mode);
-    if (active) active.classList.add("btn-size-active");
-  }
-
-  sizeButtons.forEach(btn => {
-    btn.addEventListener("click", () => applySize(btn.dataset.size));
-  });
-
-  function updateGroupButtonStates() {
-    groupButtons.forEach(btn => {
-      btn.classList.toggle("btn-group-active", btn.dataset.group === currentGroupMode);
-    });
-  }
-
-  groupButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const g = btn.dataset.group;
-      currentGroupMode = (currentGroupMode === g ? null : g);
-      updateGroupButtonStates();
-    });
-  });
-
-  clearGroupsBtn.addEventListener("click", () => {
-    currentGroupMode = null;
-    updateGroupButtonStates();
-    riders.forEach(r => delete r.dataset.group);
-    lineConfig = {1:[],2:[],3:[],4:[],5:[]};
-  });
-
-  function selectedRiders() {
-    return riders.filter(r => r.classList.contains("selected"));
-  }
-
-  // 角度差を -π〜π に正規化
-  function normalizeAngleDiff(diff) {
-    while (diff > Math.PI)  diff -= Math.PI * 2;
-    while (diff < -Math.PI) diff += Math.PI * 2;
-    return diff;
-  }
-
-  // ▼ クリック（グループ変更 or 複数選択）
+  /* ▼ クリック（グループ変更 or 複数選択） */
   track.addEventListener("click", (e) => {
     if (didDrag) {
       didDrag = false;
@@ -954,20 +886,15 @@
     if (r.style.display === "none") return;
 
     if (currentGroupMode) {
-      if (r.dataset.group === currentGroupMode) {
-        delete r.dataset.group;
-      } else {
-        r.dataset.group = currentGroupMode;
-      }
+      if (r.dataset.group === currentGroupMode) delete r.dataset.group;
+      else r.dataset.group = currentGroupMode;
       return;
     }
 
-    if (e.shiftKey) {
-      r.classList.toggle("selected");
-    }
+    if (e.shiftKey) r.classList.toggle("selected");
   });
 
-  // ▼ ライン簡易入力：文字列→車番配列（非表示車番は除外）
+  /* ▼ ライン：文字列→配列（非表示車番除外） */
   function parseLine(str) {
     if (!str) return [];
     return str
@@ -977,15 +904,12 @@
       .filter(n => !isNaN(n) && numToEl[n] && enabledNums.has(n));
   }
 
-  // ★ ライン簡易入力を反映：バンク上に“いい感じの車間”で並べる
   function applyLinesFromInputs() {
-    // いったん全グループ解除
     riders.forEach(r => delete r.dataset.group);
     lineConfig = {1:[],2:[],3:[],4:[],5:[]};
 
     const rect = track.getBoundingClientRect();
 
-    // グループごとの「基準角度」
     const baseAngles = {
       1: -Math.PI * 0.45,
       2: -Math.PI * 0.35,
@@ -1000,7 +924,6 @@
 
       const arr = parseLine(input.value);
       lineConfig[g] = arr;
-
       if (arr.length === 0) continue;
 
       const baseAngle = baseAngles[g] ?? (-Math.PI * 0.25);
@@ -1036,10 +959,9 @@
       });
     }
   }
-
   applyLinesBtn.addEventListener("click", applyLinesFromInputs);
 
-  // ★ 追随ドラッグ開始（ラインの車間が固定されるように修正）
+  /* ▼ ドラッグ */
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
@@ -1055,7 +977,6 @@
     const px0 = clientX - rect.left;
     const py0 = clientY - rect.top;
 
-    // ポインタの角度（これを「ラインの中心角」として扱う）
     dragPointerAngle0 = Math.atan2(py0 - ellipseCenterY, px0 - ellipseCenterX);
 
     let groupEls = [];
@@ -1066,28 +987,20 @@
       const conf = lineConfig[gNum];
 
       if (conf && conf.length > 0) {
-        groupEls = conf
-          .map(n => numToEl[n])
-          .filter(Boolean)
-          .filter(el => el.style.display !== "none");
+        groupEls = conf.map(n => numToEl[n]).filter(Boolean).filter(el => el.style.display !== "none");
       } else {
         groupEls = riders.filter(r => r.dataset.group === gid && r.style.display !== "none");
       }
 
-      // ラインの場合 → 車間を固定（ANGLE_SPACING ごとに並べる）
       const count = groupEls.length;
       const centerIndex = (count - 1) / 2;
 
       dragItems = groupEls.map((el, idx) => {
         const offsetIndex = idx - centerIndex;
-        return {
-          el,
-          angleOffset: offsetIndex * ANGLE_SPACING
-        };
+        return { el, angleOffset: offsetIndex * ANGLE_SPACING };
       });
 
     } else {
-      // 単独 or Shift選択でまとめて（従来通り）
       const sel = selectedRiders().filter(el => el.style.display !== "none");
       groupEls = (sel.length > 0 && sel.includes(target)) ? sel : [target];
 
@@ -1096,15 +1009,11 @@
         const cx0 = (rRect.left - rect.left) + rRect.width / 2;
         const cy0 = (rRect.top  - rect.top)  + rRect.height / 2;
         const angle0 = Math.atan2(cy0 - ellipseCenterY, cx0 - ellipseCenterX);
-        return {
-          el,
-          angleOffset: angle0 - dragPointerAngle0
-        };
+        return { el, angleOffset: angle0 - dragPointerAngle0 };
       });
     }
   }
 
-  // ★ 追随ドラッグ中
   function moveDrag(e) {
     if (!isDragging || dragItems.length === 0) return;
 
@@ -1121,9 +1030,7 @@
 
     const pointerAngle = dragPointerAngle0 + scaledDiff;
 
-    if (Math.abs(scaledDiff) > 0.002) {
-      didDrag = true;
-    }
+    if (Math.abs(scaledDiff) > 0.002) didDrag = true;
 
     dragItems.forEach(item => {
       const angle = pointerAngle + item.angleOffset;
@@ -1146,19 +1053,27 @@
     dragItems = [];
   }
 
+  track.addEventListener("mousedown", startDrag);
+  window.addEventListener("mousemove", moveDrag);
+  window.addEventListener("mouseup", endDrag);
+
+  track.addEventListener("touchstart", startDrag, { passive:false });
+  window.addEventListener("touchmove", moveDrag, { passive:false });
+  window.addEventListener("touchend", endDrag);
+  window.addEventListener("touchcancel", endDrag);
+
+  /* ▼ リセット・選択解除 */
   function reset() {
     riders.forEach(r => {
       r.style.left = r.dataset.initLeft;
       r.style.top = r.dataset.initTop;
       delete r.dataset.group;
       r.classList.remove("selected");
-      r.style.display = ""; // 表示に戻す
+      r.style.display = "";
     });
-
     lineConfig = {1:[],2:[],3:[],4:[],5:[]};
     Object.values(lineInputs).forEach(inp => inp.value = "");
 
-    // 出走チェックを全ONに戻す
     enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
     renderRiderChecks();
     applyEnabledNums();
@@ -1168,28 +1083,31 @@
     riders.forEach(r => r.classList.remove("selected"));
   }
 
-  // メモ（元の仕様そのまま）
+  resetBtn.addEventListener("click", reset);
+  clearSelectionBtn.addEventListener("click", clearSelection);
+
+  /* ▼ メモ（仕様変更なし） */
   saveMemoBtn.addEventListener("click", () => {
     localStorage.setItem(MEMO_KEY, memo.value);
   });
-
   clearMemoBtn.addEventListener("click", () => {
     memo.value = "";
     localStorage.removeItem(MEMO_KEY);
   });
 
-  // ▼ 選手メモ（1人分）スクショ機能
+  /* ▼ 選手メモ（1人分）互換対応版 */
   function normalizeName(name){
     return (name || "").trim().replace(/\s+/g, " ");
   }
 
   function loadAllRiderMemo(){
-    try{
-      const raw = localStorage.getItem(RIDER_MEMO_KEY);
-      if(!raw) return {};
-      const obj = JSON.parse(raw);
-      return (obj && typeof obj === "object") ? obj : {};
-    }catch{
+    const raw = localStorage.getItem(RIDER_MEMO_KEY);
+    if (!raw) return {};
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed;
+      return {};
+    } catch {
       return {};
     }
   }
@@ -1198,27 +1116,60 @@
     localStorage.setItem(RIDER_MEMO_KEY, JSON.stringify(obj || {}));
   }
 
+  function legacyKeyCandidates(name){
+    const n = normalizeName(name);
+    if (!n) return [];
+    return [
+      `riderMemo:${n}`,
+      `riderMemo_${n}`,
+      `riderMemo-${n}`,
+      `${RIDER_MEMO_KEY}:${n}`,
+      `${RIDER_MEMO_KEY}_${n}`,
+      `${RIDER_MEMO_KEY}-${n}`,
+    ];
+  }
+
   function loadOneRiderMemo(name){
     const key = normalizeName(name);
     if(!key) return "";
+
     const all = loadAllRiderMemo();
-    return all[key] ?? "";
+    if (all && typeof all === "object" && key in all) return all[key] ?? "";
+
+    for (const lk of legacyKeyCandidates(key)) {
+      const v = localStorage.getItem(lk);
+      if (v !== null) return v;
+    }
+
+    const raw = localStorage.getItem(RIDER_MEMO_KEY);
+    if (raw && typeof raw === "string") {
+      try { JSON.parse(raw); } catch { return raw; }
+    }
+    return "";
   }
 
   function saveOneRiderMemo(name, text){
     const key = normalizeName(name);
     if(!key) return;
+
     const all = loadAllRiderMemo();
     all[key] = text ?? "";
     saveAllRiderMemo(all);
+
+    // 旧形式互換も保存
+    localStorage.setItem(`riderMemo:${key}`, text ?? "");
   }
 
   function deleteOneRiderMemo(name){
     const key = normalizeName(name);
     if(!key) return;
+
     const all = loadAllRiderMemo();
-    delete all[key];
-    saveAllRiderMemo(all);
+    if (all && typeof all === "object") {
+      delete all[key];
+      saveAllRiderMemo(all);
+    }
+    for (const lk of legacyKeyCandidates(key)) localStorage.removeItem(lk);
   }
 
   rmLoad.addEventListener("click", () => {
@@ -1248,8 +1199,6 @@
       (text ? text + "\n" : "\n");
 
     memo.value = (memo.value || "") + (memo.value ? "\n" : "") + block;
-
-    // メモを貼り付けた結果を保持（メモ仕様は変えずに「反映」だけ）
     localStorage.setItem(MEMO_KEY, memo.value);
   });
 
@@ -1263,18 +1212,7 @@
     rmText.value = "";
   });
 
-  track.addEventListener("mousedown", startDrag);
-  window.addEventListener("mousemove", moveDrag);
-  window.addEventListener("mouseup", endDrag);
-
-  track.addEventListener("touchstart", startDrag, { passive:false });
-  window.addEventListener("touchmove", moveDrag, { passive:false });
-  window.addEventListener("touchend", endDrag);
-  window.addEventListener("touchcancel", endDrag);
-
-  resetBtn.addEventListener("click", reset);
-  clearSelectionBtn.addEventListener("click", clearSelection);
-
+  /* ▼ バンク表示 */
   function describeBank(bank) {
     const profile = lengthProfiles[bank.length] || {
       tag: "バンク",
@@ -1283,38 +1221,48 @@
     };
 
     let feature = profile.feature;
-    if (bank.customFeature) {
-      feature += " ／ " + bank.customFeature;
-    }
+    if (bank.customFeature) feature += " ／ " + bank.customFeature;
 
-    bankNameDisplay.textContent =
-      `${bank.fullName}（${bank.region}・${bank.length}m）`;
-
+    bankNameDisplay.textContent = `${bank.fullName}（${bank.region}・${bank.length}m）`;
     bankTypeDisplay.innerHTML =
       `<span class="bank-tag">${profile.tag}</span>` +
       `<span style="font-size:11px; margin-left:4px;">${profile.type}</span>`;
-
     bankFeatureDisplay.textContent = "特徴：" + feature;
 
     if (memo && !memo.value.trim()) {
-      memo.value =
-        `【バンク】${bank.fullName}（${bank.length}m）\n` +
-        `特徴：${feature}\n`;
+      memo.value = `【バンク】${bank.fullName}（${bank.length}m）\n特徴：${feature}\n`;
     }
   }
 
   bankSelect.addEventListener("change", () => {
     const key = bankSelect.value;
     const bank = bankMaster[key];
-
     if (!bank) {
       bankNameDisplay.textContent = "バンク未選択";
       bankTypeDisplay.innerHTML = '<span class="bank-tag">タイプ -</span>';
       bankFeatureDisplay.textContent = "特徴：-";
       return;
     }
-
     describeBank(bank);
+  });
+
+  /* ▼ 初期化 */
+  window.addEventListener("load", () => {
+    riders.forEach(r => {
+      const cs = getComputedStyle(r);
+      r.dataset.initLeft = cs.left;
+      r.dataset.initTop = cs.top;
+    });
+
+    applySize("small");
+
+    const saved = localStorage.getItem(MEMO_KEY);
+    if (saved !== null) memo.value = saved;
+
+    renderRiderChecks();
+    applyEnabledNums();
+
+    initRail();
   });
 
 })();
