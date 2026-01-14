@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>競輪予想ボード（9車・追随版＋ライン簡易入力＋選手メモ連携）</title>
+  <title>競輪予想ボード（9車・追随版＋ライン簡易入力＋出走チェック＋選手メモ）</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -301,71 +301,86 @@
       margin-top: 6px;
     }
 
-    /* ▼ 選手メモ欄（1人分・選手名のみ） */
-    .rider-memo-box {
+    /* ▼ 出走車番チェック（見た目） */
+    #rider-checks-row label{
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    /* ▼ 選手メモ（1人分）スクショ版 */
+    .rider-memo-one{
+      margin-top: 14px;
       width: 100%;
       max-width: 1200px;
       background: #fff;
       border: 1px solid #ddd;
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 10px;
       box-sizing: border-box;
-      margin-top: 10px;
-      font-size: 13px;
     }
-    .rider-memo-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-      display: flex;
+    .rider-memo-one-head{
+      display:flex;
+      gap:10px;
+      align-items: baseline;
       justify-content: space-between;
-      align-items: center;
-      gap: 4px;
       flex-wrap: wrap;
+      margin-bottom: 8px;
     }
-    .rider-memo-sub {
-      font-size: 11px;
-      color: #777;
+    .rider-memo-one-title{
+      font-size: 14px;
+      font-weight: 700;
     }
-    .rider-memo-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .rider-memo-row label {
+    .rider-memo-one-note{
       font-size: 12px;
+      color:#666;
     }
-    .rider-memo-row input {
+    .rider-memo-one-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom: 8px;
+    }
+    .rm-label{
       font-size: 12px;
-      padding: 3px 6px;
-      border-radius: 4px;
+      font-weight: 600;
+    }
+    .rm-name{
+      width: 260px;
+      max-width: 100%;
+      padding: 6px 8px;
+      font-size: 12px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      min-width: 180px;
-    }
-    #riderMemoBody {
-      width: 100%;
-      min-height: 70px;
-      padding: 6px;
       box-sizing: border-box;
-      border-radius: 4px;
+    }
+    .rm-text{
+      width: 100%;
+      min-height: 110px;
+      padding: 8px;
+      font-size: 13px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      font-size: 12px;
       resize: vertical;
+      box-sizing: border-box;
     }
-    .rider-memo-buttons {
-      margin-top: 4px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+    .rider-memo-one-actions{
+      margin-top: 8px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
     }
-    /* ▲ 選手メモ欄（1人分・選手名のみ） */
   </style>
 </head>
 <body>
 
   <h1>競輪 予想ボード（9車・追随版）</h1>
-  <div class="version-box">ver 1.3.0（追随＋ライン簡易入力・選手メモ連携）</div>
+  <div class="version-box">ver 1.3.0（追随＋ライン簡易入力＋出走車番チェック＋選手メモ1人分）</div>
 
   <!-- 作者Xリンク -->
   <div class="author-box">
@@ -465,6 +480,19 @@
   </div>
   <!-- ▲ 競輪場選択＋特徴表示 -->
 
+  <!-- ▼ 出走車番チェック（初期：全部ON） -->
+  <div class="line-inputs" id="rider-checks">
+    <div class="line-inputs-title">出走車番（チェックを外すと丸を非表示）</div>
+    <div class="line-row-group" id="rider-checks-row"></div>
+    <div class="line-row-button">
+      <button class="btn" id="presetAllOn">全ON</button>
+      <button class="btn" id="presetAllOff">全OFF</button>
+      <button class="btn" id="preset7">7車（1〜7）</button>
+      <button class="btn" id="preset8">8車（1〜8）</button>
+      <button class="btn" id="preset9">9車（1〜9）</button>
+    </div>
+  </div>
+
   <!-- ▼ ライン簡易入力（横並び） -->
   <div class="line-inputs">
     <div class="line-inputs-title">
@@ -529,36 +557,36 @@
   </div>
 
   <div class="hint">
+    ● 出走車番チェック → 7車立て等に対応（外すと非表示）<br>
     ● G1〜G5 → タップで所属変更／上の入力欄から一括設定も可<br>
     ● 追随版：グループに入った丸はバンクに沿ってラインごとにスルッと移動<br>
     ● 「ライン反映」で各ラインがバンク上の位置に“いい感じの車間”で整列（ドラッグしても車間固定）<br>
     ● 買目や予想、気になることをメモとして残せる・保存を押せば閉じても消えない
   </div>
 
-  <!-- メモ上広告 -->
+  <!-- ✅ 順番固定：広告 → メモ → 選手メモ -->
+
+  <!-- 広告 -->
   <div class="ads-multi">
     <div class="ad-item">
       <div class="ad-title">PR：無料会員登録</div>
 
-      <!-- 1行目：A8の本来のリンク -->
       <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" rel="nofollow">
         無料会員登録で最大3000円分もらえる
       </a>
       <br>
 
-      <!-- 2行目：押したらXに飛ぶ【広告募集中】 -->
       <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="nofollow" style="font-size:12px;">
         【広告募集中】
       </a>
 
-      <!-- A8の計測用1x1画像 -->
       <img border="0" width="1" height="1"
            src="https://www14.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
            alt="">
     </div>
   </div>
 
-  <!-- メモ欄 -->
+  <!-- メモ欄（機能は変更しない） -->
   <div class="memo-wrapper">
     <div class="memo-title">📝 メモ（この端末だけに保存されます）</div>
     <textarea id="memo" placeholder="ライン構成、展開予想、コメントなど自由にメモできます。"></textarea>
@@ -568,30 +596,30 @@
     </div>
   </div>
 
-  <!-- ▼ 選手メモ（1人分・選手名のみ／9人メモ帳と共有） -->
-  <div class="rider-memo-box">
-    <div class="rider-memo-title">
-      選手メモ（1人分）
-      <span class="rider-memo-sub">
-        9人メモ帳と同じ「riderMemo_名前」で共有。選手名を入れて読込／保存できます
-      </span>
+  <!-- 選手メモ（1人分）スクショ版 -->
+  <div class="rider-memo-one">
+    <div class="rider-memo-one-head">
+      <div class="rider-memo-one-title">選手メモ（1人分）</div>
+      <div class="rider-memo-one-note">
+        9人メモと同じ「riderMemo」名前で共有。選手名を入れて読込/保存できます
+      </div>
     </div>
 
-    <div class="rider-memo-row">
-      <label for="riderMemoName">選手名：</label>
-      <input id="riderMemoName" placeholder="例：脇本雄太">
-      <button class="btn" id="loadRiderMemoBtn">読込</button>
+    <div class="rider-memo-one-row">
+      <label class="rm-label" for="rm-name">選手名：</label>
+      <input id="rm-name" class="rm-name" placeholder="例：脇本雄太">
+      <button class="btn" id="rm-load">読込</button>
     </div>
 
-    <textarea id="riderMemoBody" placeholder="この選手の脚質・クセ・過去の印象など自由にメモできます（9人メモ帳と共通）。"></textarea>
+    <textarea id="rm-text" class="rm-text"
+      placeholder="この選手の脚質・クセ・過去の印象など自由にメモできます（9人メモと共通）。"></textarea>
 
-    <div class="rider-memo-buttons">
-      <button class="btn" id="saveRiderMemoBtn">保存</button>
-      <button class="btn" id="appendRiderMemoToMainBtn">↑ 上のメモ欄へ貼り付け</button>
-      <button class="btn" id="deleteRiderMemoBtn">削除</button>
+    <div class="rider-memo-one-actions">
+      <button class="btn" id="rm-save">保存</button>
+      <button class="btn" id="rm-paste">↑上のメモ欄へ貼り付け</button>
+      <button class="btn" id="rm-delete">削除</button>
     </div>
   </div>
-  <!-- ▲ 選手メモ（1人分・選手名のみ） -->
 
 <script>
 (function () {
@@ -608,15 +636,6 @@
   const clearMemoBtn = document.getElementById("clearMemoBtn");
   const MEMO_KEY = "keirin-board-memo-v1";
 
-  /* ▼ 選手メモ欄 DOM */
-  const riderMemoNameInput       = document.getElementById("riderMemoName");
-  const riderMemoBodyTextarea    = document.getElementById("riderMemoBody");
-  const loadRiderMemoBtn         = document.getElementById("loadRiderMemoBtn");
-  const saveRiderMemoBtn         = document.getElementById("saveRiderMemoBtn");
-  const appendRiderMemoToMainBtn = document.getElementById("appendRiderMemoToMainBtn");
-  const deleteRiderMemoBtn       = document.getElementById("deleteRiderMemoBtn");
-  /* ▲ 選手メモ欄 DOM */
-
   /* ▼ ライン簡易入力DOM */
   const applyLinesBtn = document.getElementById("applyLinesBtn");
   const lineInputs = {
@@ -628,6 +647,28 @@
   };
   let lineConfig = {1:[],2:[],3:[],4:[],5:[]};
   /* ▲ ライン簡易入力DOM */
+
+  /* ▼ 出走車番チェックDOM */
+  const riderChecksRow = document.getElementById("rider-checks-row");
+  const presetAllOn  = document.getElementById("presetAllOn");
+  const presetAllOff = document.getElementById("presetAllOff");
+  const preset7 = document.getElementById("preset7");
+  const preset8 = document.getElementById("preset8");
+  const preset9 = document.getElementById("preset9");
+
+  // 初期：全部ON
+  let enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
+  /* ▲ 出走車番チェックDOM */
+
+  /* ▼ 選手メモ（1人分）DOM */
+  const rmName  = document.getElementById("rm-name");
+  const rmText  = document.getElementById("rm-text");
+  const rmLoad  = document.getElementById("rm-load");
+  const rmSave  = document.getElementById("rm-save");
+  const rmPaste = document.getElementById("rm-paste");
+  const rmDelete= document.getElementById("rm-delete");
+  const RIDER_MEMO_KEY = "riderMemo"; // スクショに合わせる
+  /* ▲ 選手メモ（1人分）DOM */
 
   /* ▼ バンク関連DOM */
   const bankSelect        = document.getElementById("bank-select");
@@ -644,7 +685,7 @@
   let currentGroupMode = null;
 
   // ★ ライン内の角度間隔（詰め具合）共通
-  const ANGLE_SPACING = 0.12;
+  const ANGLE_SPACING = 0.13; // 広げたかったら 0.10〜0.11 に
 
   // ★ 楕円レール用パラメータ
   let ellipseCenterX = 0;
@@ -656,26 +697,6 @@
 
   // ドラッグ感度
   const DRAG_SENSITIVITY = 0.8;
-
-  /* ▼ 9人メモ帳と同じ形式で使うためのヘルパー */
-  const RIDER_MEMO_PREFIX = "riderMemo_";
-
-  function getRiderMemo(name) {
-    const trimmed = (name || "").trim();
-    if (!trimmed) return "";
-    return localStorage.getItem(RIDER_MEMO_PREFIX + trimmed) || "";
-  }
-  function setRiderMemo(name, text) {
-    const trimmed = (name || "").trim();
-    if (!trimmed) return;
-    localStorage.setItem(RIDER_MEMO_PREFIX + trimmed, text || "");
-  }
-  function removeRiderMemo(name) {
-    const trimmed = (name || "").trim();
-    if (!trimmed) return;
-    localStorage.removeItem(RIDER_MEMO_PREFIX + trimmed);
-  }
-  /* ▲ 9人メモ帳と同じ形式 */
 
   /* ▼ 全バンクマスタ */
   const bankMaster = {
@@ -777,6 +798,77 @@
     ellipseRy = baseRy;
   }
 
+  /* ▼ 出走チェック UI */
+  function renderRiderChecks() {
+    riderChecksRow.innerHTML = "";
+    for (let n = 1; n <= 9; n++) {
+      const label = document.createElement("label");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = enabledNums.has(n);
+      cb.dataset.num = String(n);
+
+      cb.addEventListener("change", () => {
+        const num = parseInt(cb.dataset.num, 10);
+        if (cb.checked) enabledNums.add(num);
+        else enabledNums.delete(num);
+
+        applyEnabledNums();
+        // ラインにも反映させたいので、必要なら自動整列
+        applyLinesFromInputs();
+      });
+
+      const span = document.createElement("span");
+      span.textContent = String(n);
+
+      label.appendChild(cb);
+      label.appendChild(span);
+      riderChecksRow.appendChild(label);
+    }
+  }
+
+  function applyEnabledNums() {
+    for (let n = 1; n <= 9; n++) {
+      const el = numToEl[n];
+      if (!el) continue;
+
+      const on = enabledNums.has(n);
+      el.style.display = on ? "" : "none";
+
+      if (!on) {
+        el.classList.remove("selected");
+        delete el.dataset.group;
+      }
+    }
+  }
+
+  function setEnabledRange(maxN) {
+    enabledNums = new Set();
+    for (let n = 1; n <= maxN; n++) enabledNums.add(n);
+    renderRiderChecks();
+    applyEnabledNums();
+    applyLinesFromInputs();
+  }
+
+  presetAllOn.addEventListener("click", () => {
+    enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
+    renderRiderChecks();
+    applyEnabledNums();
+    applyLinesFromInputs();
+  });
+
+  presetAllOff.addEventListener("click", () => {
+    enabledNums = new Set();
+    renderRiderChecks();
+    applyEnabledNums();
+    applyLinesFromInputs();
+  });
+
+  preset7.addEventListener("click", () => setEnabledRange(7));
+  preset8.addEventListener("click", () => setEnabledRange(8));
+  preset9.addEventListener("click", () => setEnabledRange(9));
+  /* ▲ 出走チェック UI */
+
   window.addEventListener("load", () => {
     riders.forEach(r => {
       const cs = getComputedStyle(r);
@@ -789,6 +881,9 @@
     if (saved !== null) {
       memo.value = saved;
     }
+
+    renderRiderChecks();
+    applyEnabledNums();
 
     initRail();
   });
@@ -856,6 +951,7 @@
 
     const r = e.target.closest(".rider");
     if (!r) return;
+    if (r.style.display === "none") return;
 
     if (currentGroupMode) {
       if (r.dataset.group === currentGroupMode) {
@@ -871,14 +967,14 @@
     }
   });
 
-  // ▼ ライン簡易入力：文字列→車番配列
+  // ▼ ライン簡易入力：文字列→車番配列（非表示車番は除外）
   function parseLine(str) {
     if (!str) return [];
     return str
       .split(/[^\d]+/)
       .filter(Boolean)
       .map(n => parseInt(n,10))
-      .filter(n => !isNaN(n) && numToEl[n]);
+      .filter(n => !isNaN(n) && numToEl[n] && enabledNums.has(n));
   }
 
   // ★ ライン簡易入力を反映：バンク上に“いい感じの車間”で並べる
@@ -943,10 +1039,11 @@
 
   applyLinesBtn.addEventListener("click", applyLinesFromInputs);
 
-  // ★ 追随ドラッグ開始
+  // ★ 追随ドラッグ開始（ラインの車間が固定されるように修正）
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
+    if (target.style.display === "none") return;
     if (!e.touches && e.shiftKey) return;
 
     isDragging = true;
@@ -969,12 +1066,15 @@
       const conf = lineConfig[gNum];
 
       if (conf && conf.length > 0) {
-        groupEls = conf.map(n => numToEl[n]).filter(Boolean);
+        groupEls = conf
+          .map(n => numToEl[n])
+          .filter(Boolean)
+          .filter(el => el.style.display !== "none");
       } else {
-        groupEls = riders.filter(r => r.dataset.group === gid);
+        groupEls = riders.filter(r => r.dataset.group === gid && r.style.display !== "none");
       }
 
-      // ラインの場合 → 車間を固定
+      // ラインの場合 → 車間を固定（ANGLE_SPACING ごとに並べる）
       const count = groupEls.length;
       const centerIndex = (count - 1) / 2;
 
@@ -987,8 +1087,8 @@
       });
 
     } else {
-      // 単独 or Shift選択
-      const sel = selectedRiders();
+      // 単独 or Shift選択でまとめて（従来通り）
+      const sel = selectedRiders().filter(el => el.style.display !== "none");
       groupEls = (sel.length > 0 && sel.includes(target)) ? sel : [target];
 
       dragItems = groupEls.map(el => {
@@ -1051,15 +1151,24 @@
       r.style.left = r.dataset.initLeft;
       r.style.top = r.dataset.initTop;
       delete r.dataset.group;
+      r.classList.remove("selected");
+      r.style.display = ""; // 表示に戻す
     });
+
     lineConfig = {1:[],2:[],3:[],4:[],5:[]};
     Object.values(lineInputs).forEach(inp => inp.value = "");
+
+    // 出走チェックを全ONに戻す
+    enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
+    renderRiderChecks();
+    applyEnabledNums();
   }
 
   function clearSelection() {
     riders.forEach(r => r.classList.remove("selected"));
   }
 
+  // メモ（元の仕様そのまま）
   saveMemoBtn.addEventListener("click", () => {
     localStorage.setItem(MEMO_KEY, memo.value);
   });
@@ -1069,80 +1178,89 @@
     localStorage.removeItem(MEMO_KEY);
   });
 
-  // ▼ 選手メモ：読込（9人メモ帳と共通）
-  loadRiderMemoBtn.addEventListener("click", () => {
-    const name = riderMemoNameInput.value.trim();
-    if (!name) {
-      alert("選手名を入力してください。");
-      return;
-    }
+  // ▼ 選手メモ（1人分）スクショ機能
+  function normalizeName(name){
+    return (name || "").trim().replace(/\s+/g, " ");
+  }
 
-    const text = getRiderMemo(name);
-    if (!text) {
-      alert("この選手名のメモは保存されていません。");
-      riderMemoBodyTextarea.value = "";
+  function loadAllRiderMemo(){
+    try{
+      const raw = localStorage.getItem(RIDER_MEMO_KEY);
+      if(!raw) return {};
+      const obj = JSON.parse(raw);
+      return (obj && typeof obj === "object") ? obj : {};
+    }catch{
+      return {};
+    }
+  }
+
+  function saveAllRiderMemo(obj){
+    localStorage.setItem(RIDER_MEMO_KEY, JSON.stringify(obj || {}));
+  }
+
+  function loadOneRiderMemo(name){
+    const key = normalizeName(name);
+    if(!key) return "";
+    const all = loadAllRiderMemo();
+    return all[key] ?? "";
+  }
+
+  function saveOneRiderMemo(name, text){
+    const key = normalizeName(name);
+    if(!key) return;
+    const all = loadAllRiderMemo();
+    all[key] = text ?? "";
+    saveAllRiderMemo(all);
+  }
+
+  function deleteOneRiderMemo(name){
+    const key = normalizeName(name);
+    if(!key) return;
+    const all = loadAllRiderMemo();
+    delete all[key];
+    saveAllRiderMemo(all);
+  }
+
+  rmLoad.addEventListener("click", () => {
+    const name = rmName.value;
+    if(!normalizeName(name)){
+      alert("選手名を入力してください");
       return;
     }
-    riderMemoBodyTextarea.value = text;
+    rmText.value = loadOneRiderMemo(name);
   });
 
-  // ▼ 選手メモ：保存（9人メモ帳と同じキーに上書き）
-  saveRiderMemoBtn.addEventListener("click", () => {
-    const name = riderMemoNameInput.value.trim();
-    if (!name) {
-      alert("選手名を入力してください。");
+  rmSave.addEventListener("click", () => {
+    const name = rmName.value;
+    if(!normalizeName(name)){
+      alert("選手名を入力してください");
       return;
     }
-    const body = riderMemoBodyTextarea.value.trim();
-    if (!body) {
-      if (!confirm("メモが空ですが、この選手のメモを空で保存しますか？")) {
-        return;
-      }
-    }
-
-    setRiderMemo(name, body);
-    alert("選手メモを保存しました。（9人メモ帳と共有）");
+    saveOneRiderMemo(name, rmText.value);
   });
 
-  // ▼ 選手メモ：上のメモ欄へ貼り付け
-  appendRiderMemoToMainBtn.addEventListener("click", () => {
-    const name = riderMemoNameInput.value.trim();
-    const body = riderMemoBodyTextarea.value.trim();
+  rmPaste.addEventListener("click", () => {
+    const name = normalizeName(rmName.value) || "（名前未入力）";
+    const text = (rmText.value || "").trim();
 
-    if (!name || !body) {
-      alert("選手名とメモを入力・読込してください。");
-      return;
-    }
+    const block =
+      `【選手メモ】${name}\n` +
+      (text ? text + "\n" : "\n");
 
-    const text = `【${name}】\n${body}\n`;
+    memo.value = (memo.value || "") + (memo.value ? "\n" : "") + block;
 
-    if (memo.value && !memo.value.endsWith("\n")) {
-      memo.value += "\n";
-    }
-    memo.value += text;
+    // メモを貼り付けた結果を保持（メモ仕様は変えずに「反映」だけ）
+    localStorage.setItem(MEMO_KEY, memo.value);
   });
 
-  // ▼ 選手メモ：削除
-  deleteRiderMemoBtn.addEventListener("click", () => {
-    const name = riderMemoNameInput.value.trim();
-    if (!name) {
-      alert("削除する選手名を入力してください。");
+  rmDelete.addEventListener("click", () => {
+    const name = rmName.value;
+    if(!normalizeName(name)){
+      alert("選手名を入力してください");
       return;
     }
-
-    const existing = getRiderMemo(name);
-    if (!existing) {
-      alert("この選手名のメモは登録されていません。");
-      return;
-    }
-
-    if (!confirm(`「${name}」のメモを削除しますか？`)) {
-      return;
-    }
-
-    removeRiderMemo(name);
-    riderMemoBodyTextarea.value = "";
-    alert("削除しました。");
+    deleteOneRiderMemo(name);
+    rmText.value = "";
   });
 
   track.addEventListener("mousedown", startDrag);
