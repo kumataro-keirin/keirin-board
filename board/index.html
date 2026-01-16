@@ -617,6 +617,19 @@
   };
   let lineConfig = {1:[],2:[],3:[],4:[],5:[]};
 
+  // ✅ タップ順を保持（グループごと）
+  let groupTapOrder = {1:[],2:[],3:[],4:[],5:[]};
+
+  function pushUnique(arr, num){
+    const i = arr.indexOf(num);
+    if (i >= 0) arr.splice(i, 1);
+    arr.push(num);
+  }
+  function removeItem(arr, num){
+    const i = arr.indexOf(num);
+    if (i >= 0) arr.splice(i, 1);
+  }
+
   /* ▼ 出走車番チェックDOM */
   const riderChecksRow = document.getElementById("rider-checks-row");
   const presetAllOn  = document.getElementById("presetAllOn");
@@ -792,6 +805,7 @@
     updateGroupButtonStates();
     riders.forEach(r => delete r.dataset.group);
     lineConfig = {1:[],2:[],3:[],4:[],5:[]};
+    groupTapOrder = {1:[],2:[],3:[],4:[],5:[]};
   });
 
   function selectedRiders() {
@@ -842,6 +856,10 @@
 
       if (!on) {
         el.classList.remove("selected");
+        if (el.dataset.group) {
+          const g = parseInt(el.dataset.group, 10);
+          removeItem(groupTapOrder[g], n);
+        }
         delete el.dataset.group;
       }
     }
@@ -886,8 +904,20 @@
     if (r.style.display === "none") return;
 
     if (currentGroupMode) {
-      if (r.dataset.group === currentGroupMode) delete r.dataset.group;
-      else r.dataset.group = currentGroupMode;
+      const g = parseInt(currentGroupMode, 10);
+      const n = parseInt(r.textContent.trim(), 10);
+
+      if (r.dataset.group === currentGroupMode) {
+        delete r.dataset.group;
+        if (!isNaN(n)) removeItem(groupTapOrder[g], n);
+      } else {
+        if (r.dataset.group) {
+          const oldG = parseInt(r.dataset.group, 10);
+          if (!isNaN(n)) removeItem(groupTapOrder[oldG], n);
+        }
+        r.dataset.group = currentGroupMode;
+        if (!isNaN(n)) pushUnique(groupTapOrder[g], n);
+      }
       return;
     }
 
@@ -922,7 +952,10 @@
       const input = lineInputs[g];
       if (!input) continue;
 
-      const arr = parseLine(input.value);
+      const typed = parseLine(input.value);
+      const tapped = (groupTapOrder[g] || []).filter(n => enabledNums.has(n) && numToEl[n]);
+      const arr = tapped.length ? tapped : typed;
+
       lineConfig[g] = arr;
       if (arr.length === 0) continue;
 
@@ -984,12 +1017,27 @@
 
     if (gid) {
       const gNum = parseInt(gid, 10);
-      const conf = lineConfig[gNum];
 
-      if (conf && conf.length > 0) {
-        groupEls = conf.map(n => numToEl[n]).filter(Boolean).filter(el => el.style.display !== "none");
+      // ==========================
+      // ✅ ここだけ変更：ドラッグの並びは「タップ順」を最優先
+      // ==========================
+      const orderedNums = (groupTapOrder[gNum] || [])
+        .filter(n => enabledNums.has(n) && numToEl[n])
+        .filter(n => numToEl[n].dataset.group === gid)
+        .filter(n => numToEl[n].style.display !== "none");
+
+      if (orderedNums.length > 0) {
+        groupEls = orderedNums.map(n => numToEl[n]).filter(Boolean);
       } else {
-        groupEls = riders.filter(r => r.dataset.group === gid && r.style.display !== "none");
+        const conf = lineConfig[gNum];
+        if (conf && conf.length > 0) {
+          groupEls = conf
+            .map(n => numToEl[n])
+            .filter(Boolean)
+            .filter(el => el.style.display !== "none");
+        } else {
+          groupEls = riders.filter(r => r.dataset.group === gid && r.style.display !== "none");
+        }
       }
 
       const count = groupEls.length;
@@ -1072,6 +1120,7 @@
       r.style.display = "";
     });
     lineConfig = {1:[],2:[],3:[],4:[],5:[]};
+    groupTapOrder = {1:[],2:[],3:[],4:[],5:[]};
     Object.values(lineInputs).forEach(inp => inp.value = "");
 
     enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
