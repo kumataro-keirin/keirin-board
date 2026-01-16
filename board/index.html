@@ -663,6 +663,81 @@
 
   const ANGLE_SPACING = 0.12;
 
+  // =========================================================
+  // ★追加：常時「弧長（バンク上の距離）」で等間隔にするための関数群
+  // =========================================================
+  let arcTable = null; // { N, angles[], lens[], total }
+
+  function normAngle0to2pi(a){
+    const t = Math.PI * 2;
+    a = a % t;
+    if (a < 0) a += t;
+    return a;
+  }
+
+  function buildArcTable(N = 2048){
+    const tMax = Math.PI * 2;
+    const dt = tMax / N;
+
+    const angles = new Array(N + 1);
+    const lens   = new Array(N + 1);
+    angles[0] = 0;
+    lens[0] = 0;
+
+    for (let i = 1; i <= N; i++){
+      const t = i * dt;
+      angles[i] = t;
+
+      // ds/dt = sqrt((rx*sin t)^2 + (ry*cos t)^2) * baseRadiusScale
+      const s = Math.hypot(ellipseRx * Math.sin(t), ellipseRy * Math.cos(t)) * baseRadiusScale;
+      lens[i] = lens[i - 1] + s * dt;
+    }
+    return { N, angles, lens, total: lens[N] };
+  }
+
+  function lengthAtAngle(angle){
+    if (!arcTable) return 0;
+    const a = normAngle0to2pi(angle);
+
+    const tMax = Math.PI * 2;
+    const x = a / tMax * arcTable.N;
+    const i = Math.floor(x);
+    const f = x - i;
+
+    const L0 = arcTable.lens[i];
+    const L1 = arcTable.lens[i + 1];
+    return L0 + (L1 - L0) * f;
+  }
+
+  function angleAtLength(len){
+    if (!arcTable) return 0;
+    const total = arcTable.total;
+
+    let L = len % total;
+    if (L < 0) L += total;
+
+    const arr = arcTable.lens;
+    let lo = 0, hi = arr.length - 1;
+    while (lo + 1 < hi){
+      const mid = (lo + hi) >> 1;
+      if (arr[mid] <= L) lo = mid;
+      else hi = mid;
+    }
+
+    const L0 = arr[lo], L1 = arr[hi];
+    const t0 = arcTable.angles[lo], t1 = arcTable.angles[hi];
+    const f = (L1 - L0) ? (L - L0) / (L1 - L0) : 0;
+    return t0 + (t1 - t0) * f;
+  }
+
+  function getSpacingPx(){
+    // 丸サイズに追随して車間を決める（好みで係数だけ調整）
+    const any = riders.find(r => r.style.display !== "none") || riders[0];
+    const w = any ? (any.offsetWidth || 52) : 52;
+    return Math.max(40, w * 0.80); // ← ここを 1.05〜1.20 で好み調整
+  }
+  // =========================================================
+
   let ellipseCenterX = 0;
   let ellipseCenterY = 0;
   let ellipseRx = 0;
@@ -766,6 +841,9 @@
     baseRadiusScale = actualR / idealR;
     ellipseRx = baseRx;
     ellipseRy = baseRy;
+
+    // ★追加：弧長テーブル生成（常時、均等車間）
+    arcTable = buildArcTable(2048);
   }
 
   function applySize(mode) {
@@ -963,6 +1041,10 @@
       const count = arr.length;
       const offsetStart = -(count - 1) / 2;
 
+      // ★追加：車間（px）を丸サイズに追随させる
+      const spacingPx = getSpacingPx();
+      const baseLen = lengthAtAngle(baseAngle);
+
       arr.forEach((num, idx) => {
         const el = numToEl[num];
         if (!el) return;
@@ -970,7 +1052,10 @@
         el.dataset.group = String(g);
 
         const offsetIndex = offsetStart + idx;
-        const angle = baseAngle + offsetIndex * ANGLE_SPACING;
+
+        // ★変更：角度等間隔ではなく「弧長（距離）等間隔」
+        const targetLen = baseLen + offsetIndex * spacingPx;
+        const angle = angleAtLength(targetLen);
 
         const ex = ellipseCenterX + Math.cos(angle) * ellipseRx * baseRadiusScale;
         const ey = ellipseCenterY + Math.sin(angle) * ellipseRy * baseRadiusScale;
@@ -1018,9 +1103,7 @@
     if (gid) {
       const gNum = parseInt(gid, 10);
 
-      // ==========================
-      // ✅ ここだけ変更：ドラッグの並びは「タップ順」を最優先
-      // ==========================
+      // ✅ ドラッグの並びは「タップ順」を最優先
       const orderedNums = (groupTapOrder[gNum] || [])
         .filter(n => enabledNums.has(n) && numToEl[n])
         .filter(n => numToEl[n].dataset.group === gid)
@@ -1043,9 +1126,10 @@
       const count = groupEls.length;
       const centerIndex = (count - 1) / 2;
 
+      // ★変更：グループは弧長等間隔用の offsetIndex を持たせる
       dragItems = groupEls.map((el, idx) => {
         const offsetIndex = idx - centerIndex;
-        return { el, angleOffset: offsetIndex * ANGLE_SPACING };
+        return { el, offsetIndex, isGroup: true };
       });
 
     } else {
@@ -1080,8 +1164,19 @@
 
     if (Math.abs(scaledDiff) > 0.002) didDrag = true;
 
+    // ★追加：グループは弧長基準で等間隔にする
+    const spacingPx = getSpacingPx();
+    const pointerLen = lengthAtAngle(pointerAngle);
+
     dragItems.forEach(item => {
-      const angle = pointerAngle + item.angleOffset;
+      let angle;
+
+      if (item.isGroup){
+        const targetLen = pointerLen + (item.offsetIndex * spacingPx);
+        angle = angleAtLength(targetLen);
+      } else {
+        angle = pointerAngle + item.angleOffset;
+      }
 
       const ex = ellipseCenterX + Math.cos(angle) * ellipseRx * baseRadiusScale;
       const ey = ellipseCenterY + Math.sin(angle) * ellipseRy * baseRadiusScale;
