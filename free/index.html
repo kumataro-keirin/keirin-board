@@ -259,7 +259,7 @@
       color: #666;
     }
 
-    /* ▼ ライン簡易入力（横並び） */
+    /* ▼ 入力ボックス共通 */
     .line-inputs {
       width: 100%;
       max-width: 1200px;
@@ -301,6 +301,17 @@
       margin-top: 6px;
     }
 
+    /* ▼ 出走車番チェックの見た目（追随と同じ） */
+    #rider-checks-row label{
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+    }
+
     /* ▼ 選手メモ表示ブロック（1人分） */
     .rider-memo-wrapper {
       margin-top: 16px;
@@ -318,7 +329,7 @@
 <body>
 
   <h1>競輪 予想ボード（9車）</h1>
-  <div class="version-box">ver 1.1.0（フリー＋ライン簡易入力＋選手メモ連携）</div>
+  <div class="version-box">ver 1.2.0（フリー＋出走チェック＋ライン簡易入力＋選手メモ連携）</div>
 
   <!-- 作者Xリンク -->
   <div class="author-box">
@@ -410,6 +421,19 @@
   </div>
   <!-- ▲ 競輪場選択＋特徴表示 -->
 
+  <!-- ▼ 出走車番チェック（追随と同じ：外すと丸を非表示） -->
+  <div class="line-inputs" id="rider-checks">
+    <div class="line-inputs-title">出走車番（チェックを外すと丸を非表示）</div>
+    <div class="line-row-group" id="rider-checks-row"></div>
+    <div class="line-row-button">
+      <button class="btn" id="presetAllOn">全ON</button>
+      <button class="btn" id="presetAllOff">全OFF</button>
+      <button class="btn" id="preset7">7車（1〜7）</button>
+      <button class="btn" id="preset8">8車（1〜8）</button>
+      <button class="btn" id="preset9">9車（1〜9）</button>
+    </div>
+  </div>
+
   <!-- ▼ ライン簡易入力（横並び） -->
   <div class="line-inputs">
     <div class="line-inputs-title">
@@ -474,6 +498,7 @@
   </div>
 
   <div class="hint">
+    ● 出走車番チェック → 7車立て等に対応（外すと非表示）<br>
     ● G1〜G5 → タップで所属変更／上の入力欄から一括設定も可<br>
     ● グループに入った丸はラインとしてまとめて移動（フリー移動版）<br>
     ● 「ライン反映」で各ラインが中央付近に横一列で整列<br>
@@ -567,6 +592,16 @@
   let lineConfig = {1:[],2:[],3:[],4:[],5:[]};
   /* ▲ ライン簡易入力DOM */
 
+  /* ▼ 出走車番チェックDOM（追随と同じ） */
+  const riderChecksRow = document.getElementById("rider-checks-row");
+  const presetAllOn  = document.getElementById("presetAllOn");
+  const presetAllOff = document.getElementById("presetAllOff");
+  const preset7 = document.getElementById("preset7");
+  const preset8 = document.getElementById("preset8");
+  const preset9 = document.getElementById("preset9");
+  let enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
+  /* ▲ 出走車番チェックDOM */
+
   /* ▼ バンク関連DOM */
   const bankSelect        = document.getElementById("bank-select");
   const bankNameDisplay   = document.getElementById("bank-name-display");
@@ -653,6 +688,76 @@
     if (!isNaN(n)) numToEl[n] = r;
   });
 
+  /* ▼ 出走チェック（追随と同じ） */
+  function renderRiderChecks() {
+    riderChecksRow.innerHTML = "";
+    for (let n = 1; n <= 9; n++) {
+      const label = document.createElement("label");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = enabledNums.has(n);
+      cb.dataset.num = String(n);
+
+      cb.addEventListener("change", () => {
+        const num = parseInt(cb.dataset.num, 10);
+        if (cb.checked) enabledNums.add(num);
+        else enabledNums.delete(num);
+
+        applyEnabledNums();
+        applyLinesFromInputs();
+      });
+
+      const span = document.createElement("span");
+      span.textContent = String(n);
+
+      label.appendChild(cb);
+      label.appendChild(span);
+      riderChecksRow.appendChild(label);
+    }
+  }
+
+  function applyEnabledNums() {
+    for (let n = 1; n <= 9; n++) {
+      const el = numToEl[n];
+      if (!el) continue;
+
+      const on = enabledNums.has(n);
+      el.style.display = on ? "" : "none";
+
+      if (!on) {
+        el.classList.remove("selected");
+        delete el.dataset.group;
+      }
+    }
+  }
+
+  function setEnabledRange(maxN) {
+    enabledNums = new Set();
+    for (let n = 1; n <= maxN; n++) enabledNums.add(n);
+    renderRiderChecks();
+    applyEnabledNums();
+    applyLinesFromInputs();
+  }
+
+  presetAllOn.addEventListener("click", () => {
+    enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
+    renderRiderChecks();
+    applyEnabledNums();
+    applyLinesFromInputs();
+  });
+
+  presetAllOff.addEventListener("click", () => {
+    enabledNums = new Set();
+    renderRiderChecks();
+    applyEnabledNums();
+    applyLinesFromInputs();
+  });
+
+  preset7.addEventListener("click", () => setEnabledRange(7));
+  preset8.addEventListener("click", () => setEnabledRange(8));
+  preset9.addEventListener("click", () => setEnabledRange(9));
+  /* ▲ 出走チェック */
+
   window.addEventListener("load", () => {
     riders.forEach(r => {
       const cs = getComputedStyle(r);
@@ -662,9 +767,10 @@
     applySize("small");
 
     const saved = localStorage.getItem(MEMO_KEY);
-    if (saved !== null) {
-      memo.value = saved;
-    }
+    if (saved !== null) memo.value = saved;
+
+    renderRiderChecks();
+    applyEnabledNums();
   });
 
   function applySize(mode) {
@@ -719,6 +825,7 @@
     }
     const r = e.target.closest(".rider");
     if (!r) return;
+    if (r.style.display === "none") return; // ←追随と同じ
 
     if (currentGroupMode) {
       if (r.dataset.group === currentGroupMode) {
@@ -733,14 +840,14 @@
     }
   });
 
-  // ▼ ライン簡易入力：文字列から車番配列に変換
+  // ▼ ライン簡易入力：文字列から車番配列に変換（非表示車番除外＝追随と同じ）
   function parseLine(str) {
     if (!str) return [];
     return str
       .split(/[^\d]+/)
       .filter(Boolean)
       .map(n => parseInt(n,10))
-      .filter(n => !isNaN(n) && numToEl[n]);
+      .filter(n => !isNaN(n) && numToEl[n] && enabledNums.has(n));
   }
 
   // 入力欄→data-group & lineConfig へ反映＋位置も「横並びで寄せる」
@@ -760,7 +867,12 @@
       5: { x: rect.width / 2, y: rect.height * 0.70 }
     };
 
-    const SPACING = 60; // 並べる間隔（px）
+    // ★ ライン反映時の車間（少し重なる）
+    const overlapPx = 0;
+    const anyEl = riders.find(r => r.style.display !== "none") || riders[0];
+    const sizePx = (anyEl && anyEl.offsetWidth) ? anyEl.offsetWidth : 52;
+
+    const SPACING = Math.max(8, sizePx - overlapPx);
 
     for (let g = 1; g <= 5; g++) {
       const input = lineInputs[g];
@@ -775,13 +887,13 @@
       const centerX = pos.x;
       const centerY = pos.y;
 
-      // 中央から左右に並べる用にオフセット計算
       const count = arr.length;
-      const offsetStart = -(count - 1) / 2;  // 例：3人なら -1,0,1
+      const offsetStart = -(count - 1) / 2;
 
       arr.forEach((num, idx) => {
         const el = numToEl[num];
         if (!el) return;
+        if (el.style.display === "none") return;
 
         el.dataset.group = String(g);
 
@@ -792,7 +904,6 @@
         const w = el.offsetWidth  || 52;
         const h = el.offsetHeight || 52;
 
-        // track内に収まるようにクランプ
         let left = targetCenterX - w / 2;
         let top  = targetCenterY - h / 2;
 
@@ -813,6 +924,7 @@
   function startDrag(e) {
     const target = e.target.closest(".rider");
     if (!target) return;
+    if (target.style.display === "none") return; // ←追随と同じ
     if (!e.touches && e.shiftKey) return;
 
     isDragging = true;
@@ -825,16 +937,19 @@
     let group = [];
     const gid = target.dataset.group;
     if (gid) {
-      // ライン入力がある場合は lineConfig の順でグループ化
       const gNum = parseInt(gid, 10);
       const conf = lineConfig[gNum];
+
       if (conf && conf.length > 0) {
-        group = conf.map(n => numToEl[n]).filter(Boolean);
+        group = conf
+          .map(n => numToEl[n])
+          .filter(Boolean)
+          .filter(el => el.style.display !== "none");
       } else {
-        group = riders.filter(r => r.dataset.group === gid);
+        group = riders.filter(r => r.dataset.group === gid && r.style.display !== "none");
       }
     } else {
-      const sel = selectedRiders();
+      const sel = selectedRiders().filter(el => el.style.display !== "none");
       group = (sel.length > 0 && sel.includes(target)) ? sel : [target];
     }
 
@@ -885,7 +1000,18 @@
     riders.forEach(r => {
       r.style.left = r.dataset.initLeft;
       r.style.top = r.dataset.initTop;
+      delete r.dataset.group;
+      r.classList.remove("selected");
+      r.style.display = "";
     });
+
+    // 出走チェックも初期化（追随と同じ）
+    enabledNums = new Set([1,2,3,4,5,6,7,8,9]);
+    renderRiderChecks();
+    applyEnabledNums();
+
+    lineConfig = {1:[],2:[],3:[],4:[],5:[]};
+    Object.values(lineInputs).forEach(inp => inp.value = "");
   }
 
   function clearSelection() {
@@ -1006,6 +1132,33 @@
 
 })();
 </script>
+
+<!-- ========================== -->
+<!-- ここだけ追加：ミニフッター -->
+<!-- ========================== -->
+<div style="
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: rgba(0,0,0,.65);
+  background: rgba(255,255,255,.86);
+  border-top: 1px solid rgba(0,0,0,.12);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+">
+  <span>© 2026 KEIRIN BOARD</span>
+  <a href="../" target="_blank" rel="noopener" style="color:#0066cc;font-weight:700;text-decoration:underline;">
+    利用規約（配布ページ）
+  </a>
+  <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="noopener" style="color:#0066cc;font-weight:700;text-decoration:underline;">
+    商用利用：X DM
+  </a>
+</div>
 
 </body>
 </html>
