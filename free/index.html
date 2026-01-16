@@ -474,9 +474,9 @@
   </div>
 
   <div class="hint">
-    ● G1〜G5 → タップで所属変更（タップ順で横並び）／上の入力欄から一括設定も可<br>
+    ● G1〜G5 → タップで所属変更／上の入力欄から一括設定も可<br>
     ● グループに入った丸はラインとしてまとめて移動（フリー移動版）<br>
-    ● 「ライン反映」で各ラインが中央付近に横一列で整列（詰め気味）<br>
+    ● 「ライン反映」で各ラインが中央付近に横一列で整列<br>
     ● 買目や予想、気になることをメモとして残せる・保存を押せば閉じても消えない
   </div>
 
@@ -485,15 +485,18 @@
     <div class="ad-item">
       <div class="ad-title">PR：無料会員登録</div>
 
+      <!-- 1行目：A8の本来のリンク -->
       <a href="https://px.a8.net/svt/ejp?a8mat=45ILCW+BQPSAA+4V0K+5YRHE" rel="nofollow">
         無料会員登録で最大3000円分もらえる
       </a>
       <br>
 
+      <!-- 2行目：押したらXに飛ぶ【広告募集中】 -->
       <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="nofollow" style="font-size:12px;">
         【広告募集中】
       </a>
 
+      <!-- A8の計測用1x1画像（位置はこのままでOK） -->
       <img border="0" width="1" height="1"
           src="https://www14.a8.net/0.gif?a8mat=45ILCW+BQPSAA+4V0K+5YRHE"
           alt="">
@@ -560,7 +563,7 @@
     4: document.getElementById("line-g4"),
     5: document.getElementById("line-g5"),
   };
-  // G1〜G5ごとのライン構成（タップ順が入る）
+  // G1〜G5ごとのライン構成（例：{1:[1,3,5],2:[2,6,9],...}）
   let lineConfig = {1:[],2:[],3:[],4:[],5:[]};
   /* ▲ ライン簡易入力DOM */
 
@@ -579,19 +582,6 @@
 
   const BASE_SIZE = 52;
   let currentGroupMode = null;
-
-  // ============================
-  // ★ 車間（詰め）設定ここ ★
-  // ============================
-  const BASE_SPACING = 60;  // 基準車間（通常）
-  // 「少し重なるくらい」：0.65 推奨（60*0.65=39px）
-  // もっと重ねたい→ 0.60 / ちょい緩め→ 0.70
-  const QUICK_RATIO  = 0.65;
-  const QUICK_SPACING = BASE_SPACING * QUICK_RATIO;
-
-  // さっと動くアニメ（不要ならfalse）
-  const QUICK_ANIM = true;
-  const QUICK_TRANSITION = "left 0.15s ease-out, top 0.15s ease-out";
 
   /* ▼ 全バンクマスタなど ▼ */
   const bankMaster = {
@@ -722,6 +712,27 @@
     return riders.filter(r => r.classList.contains("selected"));
   }
 
+  track.addEventListener("click", (e) => {
+    if (didDrag) {
+      didDrag = false;
+      return;
+    }
+    const r = e.target.closest(".rider");
+    if (!r) return;
+
+    if (currentGroupMode) {
+      if (r.dataset.group === currentGroupMode) {
+        delete r.dataset.group;
+      } else {
+        r.dataset.group = currentGroupMode;
+      }
+      return;
+    }
+    if (e.shiftKey) {
+      r.classList.toggle("selected");
+    }
+  });
+
   // ▼ ライン簡易入力：文字列から車番配列に変換
   function parseLine(str) {
     if (!str) return [];
@@ -732,93 +743,15 @@
       .filter(n => !isNaN(n) && numToEl[n]);
   }
 
-  // ============================
-  // ★ さっと整列（共通）
-  // ============================
-  function alignNumsAt(groupNum, nums, centerX, centerY, spacing) {
-    const rect = track.getBoundingClientRect();
-    if (!nums || nums.length === 0) return;
-
-    if (QUICK_ANIM) {
-      nums.forEach(n => {
-        const el = numToEl[n];
-        if (el) el.style.transition = QUICK_TRANSITION;
-      });
-      setTimeout(() => {
-        nums.forEach(n => {
-          const el = numToEl[n];
-          if (el) el.style.transition = "";
-        });
-      }, 220);
-    }
-
-    const count = nums.length;
-    const offsetStart = -(count - 1) / 2;
-
-    nums.forEach((num, idx) => {
-      const el = numToEl[num];
-      if (!el) return;
-
-      el.dataset.group = String(groupNum);
-
-      const offsetIndex = offsetStart + idx;
-      const targetCenterX = centerX + offsetIndex * spacing;
-      const targetCenterY = centerY;
-
-      const w = el.offsetWidth  || 52;
-      const h = el.offsetHeight || 52;
-
-      let left = targetCenterX - w / 2;
-      let top  = targetCenterY - h / 2;
-
-      const maxX = rect.width  - w;
-      const maxY = rect.height - h;
-
-      left = Math.max(0, Math.min(maxX, left));
-      top  = Math.max(0, Math.min(maxY, top));
-
-      el.style.left = left + "px";
-      el.style.top  = top  + "px";
-    });
-  }
-
-  function quickAlignGroup(groupNum) {
-    // ★ タップ順（lineConfig）をそのまま使う
-    let members = (lineConfig[groupNum] || []).filter(n => numToEl[n]);
-
-    // 空なら「今いるメンバー」を拾う（入力反映直後など）
-    if (members.length === 0) {
-      const gid = String(groupNum);
-      members = riders
-        .filter(r => r.dataset.group === gid)
-        .map(r => parseInt(r.textContent.trim(), 10))
-        .filter(n => !isNaN(n));
-      lineConfig[groupNum] = members.slice();
-    }
-
-    const rect = track.getBoundingClientRect();
-    const basePos = {
-      1: { x: rect.width / 2, y: rect.height * 0.30 },
-      2: { x: rect.width / 2, y: rect.height * 0.40 },
-      3: { x: rect.width / 2, y: rect.height * 0.50 },
-      4: { x: rect.width / 2, y: rect.height * 0.60 },
-      5: { x: rect.width / 2, y: rect.height * 0.70 }
-    };
-
-    const pos = basePos[groupNum];
-    if (!pos) return;
-
-    // ★ 詰め気味（少し重なる）
-    alignNumsAt(groupNum, members, pos.x, pos.y, QUICK_SPACING);
-  }
-
-  // 入力欄→data-group & lineConfig へ反映＋位置も横並び（詰め）
+  // 入力欄→data-group & lineConfig へ反映＋位置も「横並びで寄せる」
   function applyLinesFromInputs() {
     // いったん全グループ解除
     riders.forEach(r => delete r.dataset.group);
     lineConfig = {1:[],2:[],3:[],4:[],5:[]};
 
     const rect = track.getBoundingClientRect();
+
+    // 各グループの基準位置（トラック中央付近に横一列）
     const basePos = {
       1: { x: rect.width / 2, y: rect.height * 0.30 },
       2: { x: rect.width / 2, y: rect.height * 0.40 },
@@ -827,67 +760,55 @@
       5: { x: rect.width / 2, y: rect.height * 0.70 }
     };
 
+    const SPACING = 60; // 並べる間隔（px）
+
     for (let g = 1; g <= 5; g++) {
       const input = lineInputs[g];
       if (!input) continue;
 
       const arr = parseLine(input.value);
-      lineConfig[g] = arr; // 入力順がそのまま順序になる
+      lineConfig[g] = arr;
 
       const pos = basePos[g];
       if (!pos || arr.length === 0) continue;
 
-      // ★ 詰め気味（少し重なる）
-      alignNumsAt(g, arr, pos.x, pos.y, QUICK_SPACING);
+      const centerX = pos.x;
+      const centerY = pos.y;
+
+      // 中央から左右に並べる用にオフセット計算
+      const count = arr.length;
+      const offsetStart = -(count - 1) / 2;  // 例：3人なら -1,0,1
+
+      arr.forEach((num, idx) => {
+        const el = numToEl[num];
+        if (!el) return;
+
+        el.dataset.group = String(g);
+
+        const offsetIndex = offsetStart + idx;
+        const targetCenterX = centerX + offsetIndex * SPACING;
+        const targetCenterY = centerY;
+
+        const w = el.offsetWidth  || 52;
+        const h = el.offsetHeight || 52;
+
+        // track内に収まるようにクランプ
+        let left = targetCenterX - w / 2;
+        let top  = targetCenterY - h / 2;
+
+        const maxX = rect.width  - w;
+        const maxY = rect.height - h;
+
+        left = Math.max(0, Math.min(maxX, left));
+        top  = Math.max(0, Math.min(maxY, top));
+
+        el.style.left = left + "px";
+        el.style.top  = top  + "px";
+      });
     }
   }
 
   applyLinesBtn.addEventListener("click", applyLinesFromInputs);
-
-  track.addEventListener("click", (e) => {
-    if (didDrag) {
-      didDrag = false;
-      return;
-    }
-    const r = e.target.closest(".rider");
-    if (!r) return;
-
-    // ★ グループモード：タップ順で入れる→即「さっと整列」
-    if (currentGroupMode) {
-      const gNum = parseInt(currentGroupMode, 10);
-      const num = parseInt(r.textContent.trim(), 10);
-      if (isNaN(gNum) || isNaN(num)) return;
-
-      // 他グループに居たら外す（lineConfigも外す）
-      if (r.dataset.group && r.dataset.group !== currentGroupMode) {
-        const old = parseInt(r.dataset.group, 10);
-        if (!isNaN(old)) {
-          lineConfig[old] = (lineConfig[old] || []).filter(n => n !== num);
-          delete r.dataset.group;
-          quickAlignGroup(old);
-        }
-      }
-
-      // トグル（同じグループなら外す）
-      if (r.dataset.group === currentGroupMode) {
-        delete r.dataset.group;
-        lineConfig[gNum] = (lineConfig[gNum] || []).filter(n => n !== num);
-      } else {
-        r.dataset.group = currentGroupMode;
-        const arr = (lineConfig[gNum] || []);
-        if (!arr.includes(num)) arr.push(num); // ★ タップ順：末尾に追加
-        lineConfig[gNum] = arr;
-      }
-
-      quickAlignGroup(gNum);
-      return;
-    }
-
-    // Shift選択
-    if (e.shiftKey) {
-      r.classList.toggle("selected");
-    }
-  });
 
   function startDrag(e) {
     const target = e.target.closest(".rider");
@@ -904,6 +825,7 @@
     let group = [];
     const gid = target.dataset.group;
     if (gid) {
+      // ライン入力がある場合は lineConfig の順でグループ化
       const gNum = parseInt(gid, 10);
       const conf = lineConfig[gNum];
       if (conf && conf.length > 0) {
@@ -1084,33 +1006,6 @@
 
 })();
 </script>
-
-<!-- ========================== -->
-<!-- ここだけ追加：ミニフッター -->
-<!-- ========================== -->
-<div style="
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  padding: 8px 10px;
-  font-size: 11px;
-  color: rgba(0,0,0,.65);
-  background: rgba(255,255,255,.86);
-  border-top: 1px solid rgba(0,0,0,.12);
-  backdrop-filter: blur(6px);
-  z-index: 9999;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-">
-  <span>© 2026 KEIRIN BOARD</span>
-  <a href="../" target="_blank" rel="noopener" style="color:#0066cc;font-weight:700;text-decoration:underline;">
-    利用規約（配布ページ）
-  </a>
-  <a href="https://x.com/kumatarou_kuma_" target="_blank" rel="noopener" style="color:#0066cc;font-weight:700;text-decoration:underline;">
-    商用利用：X DM
-  </a>
-</div>
 
 </body>
 </html>
